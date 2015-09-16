@@ -5,17 +5,23 @@ import sqlite3
 import json
 from datetime import datetime
 from os.path import expanduser
-import hash
+
 import time
 import logging
 import requests
+import syslog
+
+#My own scripts
+import get
+import base
 
 urls = (
 	"/", "view_data",
 	"/new_user", "new_user",
 	"/gateway_receiver","gateway_receiver",
 	"/load_tables","load",
-	"/marketplace","marketplace"
+	"/marketplace","marketplace_real",
+	"/marketplace_aws_handler","marketplace_aws"
 	)
 
 # This class contains the information regarding a BTS node. It will tell the node who it is. 
@@ -39,18 +45,53 @@ class view_data:
 # The user data is stored localy in the home directory db called local_db. 
 # The table stores TIMESTAMP,IMSI(ID),NAME of the user. 
 # Question: In real cellular networks, users have several attributes/service plans/requirements.. how do we compete with that?
-
-class marketplace:
-	def __init__(self):
+class marketplace_aws:
+	def __init_(self):
 		self.node = node();
-		loglvl=logging.DEBUG;
-		logging.basicConfig(format=('%(asctime)s %(module)s %(funcName)s '
-                                    '%(lineno)d %(levelname)s %(message)s'),
-                            filename='/var/log/marketplace.log',level=loglvl)
+	def GET(self):
+		user_data=web.input();
+		if len(user_data) is 3:
+			syslog.syslog("AALU: I GOt something Good");
+			data_to_be_sent = {};
+			data_to_be_sent['to'] = user_data['to'];
+			data_to_be_sent['msisdn'] = user_data['msisdn'];
+			data_to_be_sent['text'] = user_data['text'];
+			syslog.syslog("AALU: Server said: "+ str(user_data['text']));
+			thread = get.get('http://10.8.0.10:8081/nexmo_sms','',data_to_be_sent);
+			thread.start();
+		else:
+			syslog.syslog("AALU: not enough params");
 
+class marketplace_real:
+	def __init_(self):
+		self.node = node();
+		#self.base = base.primitives();
 	def POST(self):
 		user_data=web.input();
 		if len(user_data) is 4:
+			syslog.syslog("AALU: I Got something Good in marketplace_real");
+			from_name = user_data['from_name'];
+			destination = user_data['destination']
+			from_number = user_data['from_number']
+			body = str(user_data['body'])
+			syslog.syslog("AALU: Got SMS:"+body)
+			if 'sell' in body or 'Sell' in body:
+				syslog.syslog("AALU: this is a sell message and needs to be put in the queue")
+				base.POST(from_name,"MKP",body);
+			else:
+				syslog.syslog("AALU: It should not reach here because text contains sell")
+				#
+			#thread = get.get('http://10.8.0.10:8081/nexmo_sms','',data_to_be_sent);
+			#thread.start();
+
+			
+class marketplace:
+	def __init__(self):
+		self.node = node();
+	def POST(self):
+		user_data=web.input();
+		if len(user_data) is 4:
+			syslog.syslog("AALU: user_data has 4 params")
 			from_name = user_data['from_name'];
 			destination = user_data['destination']
 			from_number = user_data['from_number']
@@ -63,8 +104,12 @@ class marketplace:
 			data_to_be_sent['msisdn'] = destination
 			data_to_be_sent['text'] = returning
 			data_list.append(data_to_be_sent)
-
-			if data_list != []:
+			thread = get.get('http://10.8.0.6:8081/nexmo_sms','',data_to_be_sent);
+			thread.start();
+			return "IF was executed"
+		else:
+			return 'something is wrong'
+		'''	if data_list != []:
 				logging.info('Inside if')
             # logging.info('Number of data in list %d' % multiple_data_to_send.count)
     			for data in data_list:
@@ -73,9 +118,8 @@ class marketplace:
         			r = requests.get(endpoint, params=data)
         			data_list.remove(data)
                 	# PostHandler.data_sent = {}
-        			logging.info('Get response object %s' % r)
-		else:
-			return 'something is wrong'
+        			logging.info('Get response object %s' % r) '''
+		
 
 		
 
@@ -239,6 +283,7 @@ class load:
 
 app = web.application(urls, locals())
 if __name__ == "__main__":
+	syslog.syslog("AALU: Starting web application")
 	app.run();
 
 

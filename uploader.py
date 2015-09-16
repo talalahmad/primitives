@@ -10,8 +10,8 @@ class file_uploader(threading.Thread):
 	def run(self):
 		url = 'http://'+self.server+':'+self.port+'/'+postHandler
 		files = {'file': open('"/home/talal/uploads/'+self.file_to_upload+'"','rb')}
-		r = request.post(url, files=files)
-		logging.info('Upload File Name: '+self.file_to_upload+' Status:'+ str(r.status_code))
+		r = request.post(url, files=files);
+		logging.info('Upload File Name: '+self.file_to_upload+' Status:'+str(r.status_code));
 		 
 
 	
