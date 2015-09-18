@@ -112,7 +112,7 @@ class marketplace_real:
 				data_to_be_sent['d'] = body
 				syslog.syslog("AALU: search: %f,%s,%s,%s" %(time.time(),req_id,"MKP",body))
 				#thread = get.get('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/server','',data_to_be_sent);
-				thread = get.get('http://0.0.0.0:8888/server','',data_to_be_sent);
+				thread = get.get('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/server','',data_to_be_sent);				
 				thread.start();
 			elif 'buy' in body or 'Buy' in body:
 				data_to_be_sent = {}
@@ -121,8 +121,8 @@ class marketplace_real:
 				data_to_be_sent['t'] = "MKP"
 				data_to_be_sent['d'] = body
 				syslog.syslog("AALU: get: %f,%s,%s,%s" %(time.time(),req_id,"MKP",body))
-				#thread = get.get('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/server','',data_to_be_sent);
-				thread = get.get('http://0.0.0.0:8888/server','',data_to_be_sent);
+				thread = get.get('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/server','',data_to_be_sent);
+				#thread = get.get('http://0.0.0.0:8888/server','',data_to_be_sent);
 				thread.start();
 			else:
 				syslog.syslog("AALU: It should not reach here because text contains sell")
