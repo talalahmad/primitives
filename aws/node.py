@@ -9,29 +9,142 @@ from os.path import expanduser
 import time
 import logging
 import requests
-import syslog
 
 #My own scripts
 import get
-import base
+#from Log import log
+import syslog
 import time
-import pylibmc
 
 urls = (
 	"/", "view_data",
 	"/new_user", "new_user",
 	"/gateway_receiver","gateway_receiver",
 	"/load_tables","load",
-	"/marketplace","marketplace_real",
-	"/marketplace_aws_handler","marketplace_aws"
+	"/marketplace","marketplace",
+	"/server","server",
+	"/ivr_server","ivr_server"
 	)
-node_name = "128.122.140.120:8080"
-number_to_ip = {};
+mpl = {}
 # This class contains the information regarding a BTS node. It will tell the node who it is. 
 # This will have an IP and port where the node is listening. 
+class ivr_server:
+	def __init__(self):
+		pass
+	def POST(self):
+		syslog.syslog("BALU: I got something in iver server")
+		x = web.input(myfile={})
+		filedir = '/home/talal/ivr/' # change this to the directory you want to store the file in.
+		if 'myfile' in x: # to check if the file-object is created
+			filepath=x.myfile.filename.replace('\\','/') # replaces the windows-style slashes with linux ones.
+			filename=filepath.split('/')[-1] # splits the and chooses the last part (the filename with extension)
+			fout = open(filedir +'/'+ filename,'w') # creates the file where the uploaded file should be stored
+			fout.write(x.myfile.file.read()) # writes the uploaded file to the newly created file.
+			fout.close() # closes the file, upload complete.
+			syslog.syslog("BALU: Written the file")
+		#raise web.seeother('/upload')
+
+class server:
+	def __init__(self):
+#		self.name= "central" # this is going to be the small server for the actual implimentation. 
+#		mpl = {} # I think this will be the queue containing all the requests 
+		pass
+	def GET(self):
+		global mpl
+		#syslog.syslog("BALU: server class invoked")
+		user_data=web.input();
+		
+		identity = user_data['i']
+		t = user_data['t']
+		d = user_data['d']
+		#syslog.syslog("BALU: i = %s, t = %s, d = %s" %(identity,t,d));
+		#lets split d over here to 
+		d = d.split(","); # fromat is: data(spaced),from_number,from_name,node_name
+		from_number = d[1]
+		from_name = d[2]
+		node_name = d[3]
+		d = d[0]
+
+		if t == "MKP":
+		#	syslog.syslog("BALU: inside t == MKP")
+			if 'sell' in d or 'Sell' in d:
+				#this needs to be put in the queue
+				message = d.split(' ') #format sell BALU 5kg 50,from_number,from_name,node_name
+				if message[1] not in mpl:
+					mpl[message[1]] = []
+					mpl[message[1]].append(message[2]+','+message[3])
+					
+				else:
+					mpl[message[1]].append(message[2]+','+message[3])
+				syslog.syslog("BALU: post: %f,%s,%s,%s" %(time.time(),identity,t,d));
+			elif 'search' in d or 'Search' in d:
+				message = d.split(' ') #format search BALU
+				if message[1] in mpl:
+					if len(mpl[message[1]]) < 5:
+						# for loop till len to compose the message
+						ret = "";
+						for i in range(0,len(mpl[message[1]])):
+							temp = mpl[message[1]][i];
+							temp = temp.split(',')
+							temp = temp[0]+" at "+temp[1]+" per unit,"
+							ret = ret+temp
+							# send this message back to the node here
+					else:
+						ret = "";
+						for i in range(0,5):
+							temp = mpl[message[1]][-1*i];
+							temp = temp.split(',')
+							temp = temp[0]+" at "+temp[1]+" per unit,"
+							ret = ret+temp
+					#Done: have to send message back to server, find this code.
+					#Done: have to add 767 to the sip_buddies table in the subscriber registry db
+					#Done: which db table will tell us from which server this stuff came? I should plug that stuff in here. 
+					#Done: testing
+					
+					data_to_be_sent = {};
+					data_to_be_sent['to'] = from_number
+					data_to_be_sent['msisdn'] = 767 #this could be problem because it might expect a string
+					data_to_be_sent['text'] = ret
+					thread = get.get('http://'+node_name+'/marketplace_aws_handler','',data_to_be_sent); #node_name coming in each request is the ip of the handler 
+					thread.start(); 
+				syslog.syslog("BALU: search: %f,%s,%s,%s" %(time.time(),identity,t,d));
+
+			elif 'buy' in d or 'Buy' in d:
+				message = d.split(' ') #format buy BALU 5KG 52
+				if message[1] not in mpl:
+					ret = "There is no such crop"
+					# then there is nothing to buy
+				elif mpl[message[1]] == []:
+					ret = "probably sold"
+				else:
+					search = message[2]+","+message[3]  
+					index = -1;
+					for i in range(0,len(mpl[message[1]])):
+						if mpl[message[1]][i] == search:
+							index = i;
+							break;
+
+					if index != -1:
+						#item was found at index = index
+						temp = mpl[message[1]][index].split(',')
+						ret = "You bought "+temp[0]+" at "+temp[1]+" per unit"
+						#syslog.syslog("index = %d" %index)
+						mpl[message[1]].remove(search)
+
+						#could be moved to a transactions folder 
+				data_to_be_sent = {};
+				data_to_be_sent['to'] = from_number
+				data_to_be_sent['msisdn'] = 767 #this could be problem because it might expect a string
+				data_to_be_sent['text'] = ret
+				thread = get.get('http://'+node_name+'/marketplace_aws_handler','',data_to_be_sent); #node_name coming in each request is the ip of the handler 
+				thread.start();
+				syslog.syslog("BALU: get: %f,%s,%s,%s" %(time.time(),identity,t,d));
+						# for loop from last to first of size 5 to compose message 
+		# IVR application handling code here
+
 class node:
 	def __init__(self):
-		self.name = "128.122.140.120"
+		self.name = "my_name"
 
 	def send_data_to_gateway(imsi,name,mode):
 		#put in the post request for sending data
@@ -42,107 +155,32 @@ class view_data:
 		self.a = 'a';
 
 	def GET(self):
+		syslog.syslog("BALU Hello world");
 		return 'Hello World';
 
 # this class is used to keep a record of the users in the local node.
 # The user data is stored localy in the home directory db called local_db. 
 # The table stores TIMESTAMP,IMSI(ID),NAME of the user. 
 # Question: In real cellular networks, users have several attributes/service plans/requirements.. how do we compete with that?
-class marketplace_aws:
-	def __init_(self):
-		self.node = node();
-	def GET(self):
-		user_data=web.input();
-		if len(user_data) is 3:
-			#syslog.syslog("AALU: I GOt something Good");
-			data_to_be_sent = {};
-			data_to_be_sent['to'] = user_data['to'];
-			data_to_be_sent['msisdn'] = user_data['msisdn'];
-			data_to_be_sent['text'] = user_data['text'];
-			#syslog.syslog("AALU: Server said: "+ str(user_data['text']));
-			global number_to_ip;
-			ip = number_to_ip[data_to_be_sent['to']]
-			thread = get.get('http://'+ip+':8081/nexmo_sms','',data_to_be_sent);
-			thread.start();
-		else:
-			syslog.syslog("AALU: not enough params");
 
-class marketplace_real:
-	def __init_(self):
-		pass
-	#	self.node = node();
-	#	mc['id'] =  0; # the id of every post request
-		#self.base = base.primitives();
-	def POST(self):
-		global number_to_ip;
-		global node_name; # this contains the IP of the node
-		#syslog.syslog('AALU: in post')
-		mc = pylibmc.Client(["127.0.0.1"], binary=True, behaviors={"tcp_nodelay": True, "ketama": True})
-		if mc.get('id') is None:
-			mc.set('id',0)
-		req_id = str(mc.get('id'))
-		mc['id'] = mc['id']+1
-		user_data=web.input();
-		if len(user_data) is 5:
-		#	syslog.syslog("AALU: I Got something Good in marketplace_real");
-			from_name = user_data['from_name'];
-			destination = user_data['destination']
-			from_number = user_data['from_number']
-			ip = user_data['ip'] #ip of the rapidcell node 
-
-			if from_number not in number_to_ip:
-				number_to_ip[from_number] = ip
-
-			body = str(user_data['body'])
-			body = body+","+from_number+","+from_name+","+node_name #appending useful information to the body
-		#	syslog.syslog("AALU: Got SMS:"+body)
-			if 'sell' in body or 'Sell' in body:
-		#		syslog.syslog("AALU: this is a sell message and needs to be put in the queue")
-
-				string = "AALU: post: %s,%s,%s,%s" %(str(time.time()),req_id,"MKP",body)
-				syslog.syslog(string);
-				base.POST(req_id,"MKP",body);
-				#mc['id'] =  mc['id']+1;
-			elif 'search' in body or 'Search' in body:
-				data_to_be_sent = {}
-				#req_id = str(mc['id']+1)
-				data_to_be_sent['i'] = req_id
-				#mc['id'] =  mc['id']+1;
-				data_to_be_sent['t'] = "MKP"
-				data_to_be_sent['d'] = body
-				syslog.syslog("AALU: search: %f,%s,%s,%s" %(time.time(),req_id,"MKP",body))
-				#thread = get.get('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/server','',data_to_be_sent);
-				thread = get.get('http://0.0.0.0:8888/server','',data_to_be_sent);
-				thread.start();
-			elif 'buy' in body or 'Buy' in body:
-				data_to_be_sent = {}
-				data_to_be_sent['i'] = req_id
-				#mc['id'] =  mc['id']+1;
-				data_to_be_sent['t'] = "MKP"
-				data_to_be_sent['d'] = body
-				syslog.syslog("AALU: get: %f,%s,%s,%s" %(time.time(),req_id,"MKP",body))
-				#thread = get.get('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/server','',data_to_be_sent);
-				thread = get.get('http://0.0.0.0:8888/server','',data_to_be_sent);
-				thread.start();
-			else:
-				syslog.syslog("AALU: It should not reach here because text contains sell")
-				#
-			#thread = get.get('http://10.8.0.10:8081/nexmo_sms','',data_to_be_sent);
-			#thread.start();
-
-			
 class marketplace:
 	def __init__(self):
 		self.node = node();
+		
+
+
 	def POST(self):
+		# import logging
+		# logging.basicConfig(format='%(asctime)s %(module)s %(funcName)s %(lineno)d %(levelname)s %(message)s', filename='/var/log/sms-server.log', level=logging.INFO)
+
 		user_data=web.input();
 		if len(user_data) is 4:
-			syslog.syslog("AALU: user_data has 4 params")
+			syslog.syslog("BALU: user_data has 4 params")
 			from_name = user_data['from_name'];
 			destination = user_data['destination']
 			from_number = user_data['from_number']
 			body = user_data['body']
-			logging.info("Got SMS: %s" % (body))
+			syslog.syslog("BALU Got SMS: %s" % (body))
 			returning = body[::-1]
 			data_list = [];
 			data_to_be_sent = {}
@@ -150,7 +188,7 @@ class marketplace:
 			data_to_be_sent['msisdn'] = destination
 			data_to_be_sent['text'] = returning
 			data_list.append(data_to_be_sent)
-			thread = get.get('http://10.8.0.6:8081/nexmo_sms','',data_to_be_sent);
+			thread = get.get('http://128.122.140.120:8080/marketplace_aws_handler','',data_to_be_sent);
 			thread.start();
 			return "IF was executed"
 		else:
@@ -329,7 +367,8 @@ class load:
 
 app = web.application(urls, locals())
 if __name__ == "__main__":
-	syslog.syslog("AALU: Starting web application")
+	#syslog.openlog(facility=syslog.LOG_LOCAL0);
+	syslog.syslog("BALU: Starting web application")
 	app.run();
 
 

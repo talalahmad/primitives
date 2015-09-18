@@ -15,7 +15,7 @@ def POST(i,t,d):
 		mc['queue_head'] = -1; #this contains the head of the queue that exists in mc, value of -1 means that the queue is empty. 
 	if mc.get('queue_tail') is None:
 		mc['queue_tail'] = -1; # this contains the tail of the queue that exists in mc, value of -1 means that the queue is empty.
-	syslog.syslog("AALU: i="+i+",t="+t+",d="+d)
+	#syslog.syslog("AALU: i="+i+",t="+t+",d="+d)
 	if mc.get('queue_tail') == mc.get('queue_head') and mc.get(str(mc.get('queue_head'))) is not None:
 	 	mc.incr('queue_tail')
 		mc.set(str(mc.get('queue_tail')),i+","+t+","+d)
