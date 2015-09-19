@@ -53,15 +53,23 @@ class marketplace_aws:
 		self.node = node();
 	def GET(self):
 		user_data=web.input();
-		if len(user_data) is 3:
-			#syslog.syslog("AALU: I GOt something Good");
-			data_to_be_sent = {};
-			data_to_be_sent['to'] = user_data['to'];
-			data_to_be_sent['msisdn'] = user_data['msisdn'];
-			data_to_be_sent['text'] = user_data['text'];
-			#syslog.syslog("AALU: Server said: "+ str(user_data['text']));
+		syslog.syslog("AALU: in GET")
+ 		if len(user_data) is 3:
+ 			#syslog.syslog("AALU: I GOt something Good");
+ 			data_to_be_sent = {};
+ 			data_to_be_sent['to'] = user_data['to'];
+ 			data_to_be_sent['msisdn'] = user_data['msisdn'];
+ 			data_to_be_sent['text'] = user_data['text'];
+ 			syslog.syslog("AALU: Server said: something");
 			global number_to_ip;
-			ip = number_to_ip[data_to_be_sent['to']]
+			if data_to_be_sent['to'] not in number_to_ip:
+				ip = "10.8.0.10"
+				syslog.syslog("AALU: send this to ghana")
+			else:
+				ip = number_to_ip[data_to_be_sent['to']]
+
+			
+# #			ip = "10.8.0.10"
 			thread = get.get('http://'+ip+':8081/nexmo_sms','',data_to_be_sent);
 			thread.start();
 		else:
