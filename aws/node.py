@@ -69,7 +69,7 @@ class server:
 		#	syslog.syslog("BALU: inside t == MKP")
 			if 'sell' in d or 'Sell' in d:
 				#this needs to be put in the queue
-				message = d.split(' ') #format sell BALU 5kg 50,from_number,from_name,node_name
+				message = d.split(' ') #format sell BALU 5kg 50
 				if message[1] not in mpl:
 					mpl[message[1]] = []
 					mpl[message[1]].append(message[2]+','+message[3])
@@ -78,11 +78,11 @@ class server:
 					mpl[message[1]].append(message[2]+','+message[3])
 				syslog.syslog("BALU: post: %f,%s,%s,%s" %(time.time(),identity,t,d));
 			elif 'search' in d or 'Search' in d:
+				ret = d+":"
 				message = d.split(' ') #format search BALU
 				if message[1] in mpl:
 					if len(mpl[message[1]]) < 5:
 						# for loop till len to compose the message
-						ret = "";
 						for i in range(0,len(mpl[message[1]])):
 							temp = mpl[message[1]][i];
 							temp = temp.split(',')
@@ -90,23 +90,24 @@ class server:
 							ret = ret+temp
 							# send this message back to the node here
 					else:
-						ret = "";
 						for i in range(0,5):
 							temp = mpl[message[1]][-1*i];
 							temp = temp.split(',')
 							temp = temp[0]+" at "+temp[1]+" per unit,"
 							ret = ret+temp
+				else:
+					ret = ret+"no such crop found"
 					#Done: have to send message back to server, find this code.
 					#Done: have to add 767 to the sip_buddies table in the subscriber registry db
 					#Done: which db table will tell us from which server this stuff came? I should plug that stuff in here. 
 					#Done: testing
 					
-					data_to_be_sent = {};
-					data_to_be_sent['to'] = from_number
-					data_to_be_sent['msisdn'] = 767 #this could be problem because it might expect a string
-					data_to_be_sent['text'] = ret
-					thread = get.get('http://'+node_name+'/marketplace_aws_handler','',data_to_be_sent); #node_name coming in each request is the ip of the handler 
-					thread.start(); 
+				data_to_be_sent = {};
+				data_to_be_sent['to'] = from_number
+				data_to_be_sent['msisdn'] = 767 #this could be problem because it might expect a string
+				data_to_be_sent['text'] = ret
+				thread = get.get('http://'+node_name+'/marketplace_aws_handler','',data_to_be_sent); #node_name coming in each request is the ip of the handler 
+				thread.start(); 
 				syslog.syslog("BALU: search: %f,%s,%s,%s" %(time.time(),identity,t,d));
 
 			elif 'buy' in d or 'Buy' in d:
