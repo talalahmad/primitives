@@ -38,7 +38,7 @@ def main():
 			#add if else based on the application for which data is being uploaded. 
 			if item[1] == 'IVR':
 				data_to_be_sent['d'] = item[2]
-			#	thread = uploader.file_uploader('http://128.122.140.120:8888/ivr_server', '', data_to_be_sent['d'])
+                                # thread = uploader.file_uploader('http://128.122.140.120:8888/ivr_server', '', data_to_be_sent['d'])
 				thread = uploader.file_uploader('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/ivr_server', '', data_to_be_sent['d'])
 				thread.start()
 				thread.join()
