@@ -34,7 +34,7 @@ class ivr_server:
 	def POST(self):
 		syslog.syslog("BALU: I got something in iver server")
 		x = web.input(myfile={})
-		filedir = '/home/talal/ivr/' # change this to the directory you want to store the file in.
+		filedir = '/home/ec2-user/ivr' # change this to the directory you want to store the file in.
 		if 'myfile' in x: # to check if the file-object is created
 			filepath=x.myfile.filename.replace('\\','/') # replaces the windows-style slashes with linux ones.
 			filename=filepath.split('/')[-1] # splits the and chooses the last part (the filename with extension)
