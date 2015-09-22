@@ -3,7 +3,7 @@ import logging
 import datetime
 import time
 import uploader
-
+import syslog
 
 def main():
 
@@ -20,6 +20,7 @@ def main():
             with open(file_path, "w+") as file_to_send:
                 file_to_send.write(random_text)
                 file_to_send.close()
+                syslog.syslog("AALU: Random file:%s at time:%s" %(file_path,str(time.time()))
                 thread = uploader.file_uploader('http://10.0.0.1:9090/upload', '', file_path)
                 thread.start()
                 thread.join()

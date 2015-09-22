@@ -23,7 +23,8 @@ urls = (
 	"/load_tables","load",
 	"/marketplace","marketplace",
 	"/server","server",
-	"/ivr_server","ivr_server"
+	"/ivr_server","ivr_server",
+	"/random_server","random_server"
 	)
 mpl = {}
 # This class contains the information regarding a BTS node. It will tell the node who it is. 
@@ -41,8 +42,36 @@ class ivr_server:
 			fout = open(filedir +'/'+ filename,'w') # creates the file where the uploaded file should be stored
 			fout.write(x.myfile.file.read()) # writes the uploaded file to the newly created file.
 			fout.close() # closes the file, upload complete.
-			syslog.syslog("BALU: Written the file")
+			syslog.syslog("BALU: ivr file:%s at time:%s" %(filename,str(time.time())))
+			data_to_be_sent = {};
+			data_to_be_sent['ret'] = filename
+			data_to_be_sent['app'] = 'IVR'
+			thread = get.get('http://'+node_name+'/aws_file_handler','',data_to_be_sent); #node_name coming in each request is the ip of the handler 
+			thread.start();
 		#raise web.seeother('/upload')
+
+
+class random_server:
+	def __init__(self):
+		pass
+	def POST(self):
+		#syslog.syslog("BALU: I got something in iver server")
+		x = web.input(myfile={})
+		filedir = '/home/ec2-user/random' # change this to the directory you want to store the file in.
+		if 'myfile' in x: # to check if the file-object is created
+			filepath=x.myfile.filename.replace('\\','/') # replaces the windows-style slashes with linux ones.
+			filename=filepath.split('/')[-1] # splits the and chooses the last part (the filename with extension)
+			fout = open(filedir +'/'+ filename,'w') # creates the file where the uploaded file should be stored
+			fout.write(x.myfile.file.read()) # writes the uploaded file to the newly created file.
+			fout.close() # closes the file, upload complete.
+			syslog.syslog("BALU: ivr file:%s at time:%s" %(filename,str(time.time())))
+			data_to_be_sent = {};
+			data_to_be_sent['ret'] = filename
+			data_to_be_sent['app'] = 'SEN'
+			thread = get.get('http://'+node_name+'/aws_file_handler','',data_to_be_sent); #node_name coming in each request is the ip of the handler 
+			thread.start();
+		#raise web.seeother('/upload')
+
 
 class server:
 	def __init__(self):

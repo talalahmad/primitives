@@ -4,6 +4,7 @@ import pylibmc
 import threading
 import logging
 import base
+import syslog
 
 logging.basicConfig(format='%(asctime)s %(module)s %(funcName)s %(lineno)d %(levelname)s %(message)s', filename='/var/log/audio-server.log', level=logging.INFO)
 
@@ -27,6 +28,7 @@ def main():
 	                req_id = str(mc.get('id'))
 	                mc['id'] = mc['id']+1
                         logging.info('Req Id : %s' % req_id)
+                        syslog.syslog("AALU: post ivr file:%s,%s,%s" %(str(time.time()),req_id,content_item))
                         base.POST(req_id, "IVR", str(content_item))
                        # params = {'i': req_id, 't': 'IVR', 'd': str(content_item)}
 		       # r = requests.post(url, params=params)

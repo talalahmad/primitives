@@ -139,7 +139,7 @@ class nexmo_sms(incoming_sms):
             from_ = str(data.msisdn)
             body = str(data.text)
             current_time = time.time()
-            syslog.syslog("AALU: " + "Response time and message: " + str(current_time) + " " + body)
+            syslog.syslog("RAPID: " + "Response time and message: " + str(current_time) + " body:" + body)
             self.fs_ic.send(to, from_, body)
             # syslog.syslog("AALU: Response time and message: " + current_time + " " +  body)
             self.bill(to, from_)
