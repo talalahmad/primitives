@@ -23,7 +23,7 @@ urls = (
 	"/gateway_receiver","gateway_receiver",
 	"/load_tables","load",
 	"/marketplace","marketplace_real",
-	"/marketplace_aws_handler","marketplace_aws"
+	"/marketplace_aws_handler","marketplace_aws",
 	"/upload", "upload"
 	)
 node_name = "128.122.140.120:8080"
@@ -53,8 +53,8 @@ class marketplace_aws:
 	def __init_(self):
 		self.node = node();
 	def GET(self):
-		user_data=web.input();
 		syslog.syslog("AALU: in GET")
+		user_data=web.input();
  		if len(user_data) is 3:
  			#syslog.syslog("AALU: I GOt something Good");
  			data_to_be_sent = {};

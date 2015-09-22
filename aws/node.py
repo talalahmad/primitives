@@ -68,6 +68,7 @@ class server:
 		if t == "MKP":
 		#	syslog.syslog("BALU: inside t == MKP")
 			if 'sell' in d or 'Sell' in d:
+				ret = d+" : "
 				#this needs to be put in the queue
 				message = d.split(' ') #format sell BALU 5kg 50
 				if message[1] not in mpl:
@@ -77,6 +78,14 @@ class server:
 				else:
 					mpl[message[1]].append(message[2]+','+message[3])
 				syslog.syslog("BALU: post: %f,%s,%s,%s" %(time.time(),identity,t,d));
+
+				data_to_be_sent = {};
+				data_to_be_sent['to'] = from_number
+				data_to_be_sent['msisdn'] = 767 #this could be problem because it might expect a string
+				data_to_be_sent['text'] = ret+"posted"
+				thread = get.get('http://'+node_name+'/marketplace_aws_handler','',data_to_be_sent); #node_name coming in each request is the ip of the handler 
+				thread.start(); 
+
 			elif 'search' in d or 'Search' in d:
 				ret = d+":"
 				message = d.split(' ') #format search BALU
@@ -111,12 +120,13 @@ class server:
 				syslog.syslog("BALU: search: %f,%s,%s,%s" %(time.time(),identity,t,d));
 
 			elif 'buy' in d or 'Buy' in d:
+				ret = d+" : "
 				message = d.split(' ') #format buy BALU 5KG 52
 				if message[1] not in mpl:
-					ret = "There is no such crop"
+					ret = ret+"There is no such crop"
 					# then there is nothing to buy
 				elif mpl[message[1]] == []:
-					ret = "probably sold"
+					ret = ret+"probably sold"
 				else:
 					search = message[2]+","+message[3]  
 					index = -1;
@@ -128,7 +138,7 @@ class server:
 					if index != -1:
 						#item was found at index = index
 						temp = mpl[message[1]][index].split(',')
-						ret = "You bought "+temp[0]+" at "+temp[1]+" per unit"
+						ret = ret+"You bought "+temp[0]+" at "+temp[1]+" per unit"
 						#syslog.syslog("index = %d" %index)
 						mpl[message[1]].remove(search)
 
