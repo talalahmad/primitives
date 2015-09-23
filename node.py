@@ -26,13 +26,25 @@ urls = (
 	"/marketplace_aws_handler","marketplace_aws",
 	"/upload", "upload",
 	"/aws_file_handler", "aws_file_handler",
-	"/nexmo_file" , "nexmo_file"
+	"/nexmo_file" , "nexmo_file",
+	"/search_and_get_random", "search_and_get_random"
 	)
 node_name = "128.122.140.120:8080"
 number_to_ip = {};
 file_to_ip = {};
-# This class contains the information regarding a BTS node. It will tell the node who it is. 
-# This will have an IP and port where the node is listening. 
+
+class search_and_get:
+{
+	def __init__(self):
+		pass
+	def GET(self):
+		user_data = web.input()
+		if user_data['do'] == 'search':
+			#search on aws for a random file uploaded by someone else. For example if you are calling this from rapidcell you can search with my openvpn IP to try and find a file i have uploaded
+		elif user_data['do'] == 'get':
+			#get a file 
+} 
+
 class nexmo_file:
     def __init__(self):
         pass
