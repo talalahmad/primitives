@@ -4,7 +4,7 @@ import datetime
 import time
 import uploader
 import syslog
-
+#RUN this code should run in the BTS node. 
 def main():
 
     now = datetime.datetime.now()
@@ -12,16 +12,19 @@ def main():
     while True:
         new_time = datetime.datetime.now()
         time_elapsed = new_time - now
-        if time_elapsed.seconds > 5:
+        if time_elapsed.seconds > 30:
             now = new_time
-            filename = str(now) + ".txt"
+            #RUN: change the ip to mention the source
+            filename = "SEN:10.8.0.6:"+str(now) + ".txt"
             random_text = ("Random text is going into this goddamn file and its so deep" + "\n") * 2000
-            file_path = '/home/openbts/UploadFolder/' + filename.replace(" ", "")
+            #RUN: foldername needs to be changed based on the machine usage. 
+            file_path = '/home/talal/UploadFolder/' + filename.replace(" ", "")
             with open(file_path, "w+") as file_to_send:
                 file_to_send.write(random_text)
                 file_to_send.close()
-                syslog.syslog("AALU: Random file:%s at time:%s" %(file_path,str(time.time()))
-                thread = uploader.file_uploader('http://10.0.0.1:9090/upload', '', file_path)
+                syslog.syslog("RAPID: Random file:%s at time:%s" %(filename.replace(" ",""),str(time.time())))
+                #RUN: change the ip and port below based on what is your local server 
+                thread = uploader.file_uploader('http://10.8.0.1:8080/upload', '', file_path)
                 thread.start()
                 thread.join()
 

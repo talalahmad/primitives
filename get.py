@@ -15,7 +15,7 @@ class get(threading.Thread):
 
 	def run(self):
 		url = self.server;
-	#	syslog.syslog("AALU: Seding GET to "+str(url));
+		syslog.syslog("AALU: Seding GET to "+str(url));
 		r = requests.get(url, params=self.data)
 		print "AALU: Get response object"+str(r)
        

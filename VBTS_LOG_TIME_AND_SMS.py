@@ -8,7 +8,7 @@ def chat(message, args):
 	args = args.split("|")
 	current_time = time.time()
 	text_body = args[2]
-	syslog.syslog("RAPID: " + "Call time and message: " + str(current_time) + " " + str(text_body))
+	syslog.syslog("RAPID: " + "post message: " + str(current_time) + "," + str(text_body))
 
 def fsapi(session, stream, env, args):
 	chat(None, args)

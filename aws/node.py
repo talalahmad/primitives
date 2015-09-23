@@ -24,7 +24,8 @@ urls = (
 	"/marketplace","marketplace",
 	"/server","server",
 	"/ivr_server","ivr_server",
-	"/random_server","random_server"
+	"/random_server","random_server",
+	"/nexmo_file","nexmo_file"
 	)
 mpl = {}
 # This class contains the information regarding a BTS node. It will tell the node who it is. 
@@ -46,7 +47,7 @@ class ivr_server:
 			data_to_be_sent = {};
 			data_to_be_sent['ret'] = filename
 			data_to_be_sent['app'] = 'IVR'
-			thread = get.get('http://'+node_name+'/aws_file_handler','',data_to_be_sent); #node_name coming in each request is the ip of the handler 
+			thread = get.get('http://128.122.140.120:8080/aws_file_handler','',data_to_be_sent); #node_name coming in each request is the ip of the handler 
 			thread.start();
 		#raise web.seeother('/upload')
 
@@ -56,6 +57,7 @@ class random_server:
 		pass
 	def POST(self):
 		#syslog.syslog("BALU: I got something in iver server")
+		syslog.syslog("BALU: Came to random_server POST")
 		x = web.input(myfile={})
 		filedir = '/home/ec2-user/random' # change this to the directory you want to store the file in.
 		if 'myfile' in x: # to check if the file-object is created
@@ -64,11 +66,12 @@ class random_server:
 			fout = open(filedir +'/'+ filename,'w') # creates the file where the uploaded file should be stored
 			fout.write(x.myfile.file.read()) # writes the uploaded file to the newly created file.
 			fout.close() # closes the file, upload complete.
-			syslog.syslog("BALU: ivr file:%s at time:%s" %(filename,str(time.time())))
+			syslog.syslog("BALU: time = %s" %str(time.time()))
+			syslog.syslog("BALU: random post:%s,%s" %(filename,str(time.time())))
 			data_to_be_sent = {};
 			data_to_be_sent['ret'] = filename
 			data_to_be_sent['app'] = 'SEN'
-			thread = get.get('http://'+node_name+'/aws_file_handler','',data_to_be_sent); #node_name coming in each request is the ip of the handler 
+			thread = get.get('http://128.122.140.120:8080/aws_file_handler','',data_to_be_sent); #node_name coming in each request is the ip of the handler 
 			thread.start();
 		#raise web.seeother('/upload')
 

@@ -15,6 +15,7 @@ def main():
     mc = pylibmc.Client(["127.0.0.1"], binary=True, behaviors={"tcp_nodelay": True, "ketama": True})
     logging.info('Mem Cache : %s' % str(mc))
     while True:
+        #RUN: another thing that needs changing according the local server running this. 
         with open('/home/cted-server/Primitives/primitives/ivr_audio_files.txt', 'r+') as ivr_audio_files:
             content = ivr_audio_files.readlines()
             #  logging.info('Content : %s' % content)
@@ -28,7 +29,7 @@ def main():
 	                req_id = str(mc.get('id'))
 	                mc['id'] = mc['id']+1
                         logging.info('Req Id : %s' % req_id)
-                        syslog.syslog("AALU: post ivr file:%s,%s,%s" %(str(time.time()),req_id,content_item))
+                        syslog.syslog("AALU: post ivr file:%s,%s,%s" %(str(time.time()),req_id,content_item.split('/')[-1]))
                         base.POST(req_id, "IVR", str(content_item))
                        # params = {'i': req_id, 't': 'IVR', 'd': str(content_item)}
 		       # r = requests.post(url, params=params)

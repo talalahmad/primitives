@@ -25,12 +25,26 @@ urls = (
 	"/marketplace","marketplace_real",
 	"/marketplace_aws_handler","marketplace_aws",
 	"/upload", "upload",
-	"/aws_file_handler", "aws_file_handler"
+	"/aws_file_handler", "aws_file_handler",
+	"/nexmo_file" , "nexmo_file"
 	)
 node_name = "128.122.140.120:8080"
 number_to_ip = {};
+file_to_ip = {};
 # This class contains the information regarding a BTS node. It will tell the node who it is. 
 # This will have an IP and port where the node is listening. 
+class nexmo_file:
+    def __init__(self):
+        pass
+    def GET(self):
+        print "some shit"
+        syslog.syslog("RAPID: in GET of nexmo_file")
+        data = web.input()
+        if len(user_data) is 2:
+            post_ret = user_data['ret']
+            app = user_data['app']
+            syslog.syslog("RAPID: post ret:%s,%s,%s" %(post_ret,app,str(time.time())))
+
 class node:
 	def __init__(self):
 		self.name = "128.122.140.120"
@@ -69,10 +83,12 @@ class marketplace_aws:
 				syslog.syslog("AALU: send this to ghana")
 			else:
 				ip = number_to_ip[data_to_be_sent['to']]
-
+			
+			thread = get.get('http://'+ip+':8081/nexmo_sms','',data_to_be_sent);
+			thread.start();
 			
 # #			ip = "10.8.0.10"
-			ew();
+#			ew();
 		else:
 			syslog.syslog("AALU: not enough params");
 
@@ -83,19 +99,22 @@ class aws_file_handler:
 		syslog.syslog("AALU: in aws_file_handler")
 		user_data=web.input();
 		if len(user_data) is 2:
-			data_to_be_sent = {};
+			data_to_be_sent = {}
 			data_to_be_sent['ret'] = user_data['ret']
 			data_to_be_sent['app'] = user_data['app']
-
-			global file_to_ip;
-			if data_to_be_sent['ret'] not in file_to_ip:
-				ip="10.8.0.10"
-				syslog.syslog("AALU: send file to ghana")
+			if user_data['app'] == 'IVR':
+				syslog.syslog("AALU: post ivr ret:%s,%s" %(user_data['ret'],str(time.time())))
 			else:
-				ip = file_to_ip[data_to_be_send['ret']]
-
-
-            # raise web.seeother('/upload')
+				global file_to_ip;
+				if data_to_be_sent['ret'] not in file_to_ip:
+					ip="10.8.0.10"
+				#	syslog.syslog("AALU: send file ack to ghana")
+				else:
+					ip = file_to_ip[data_to_be_sent['ret']]
+				#	syslog.syslog("AALU: send file ack to nyc:%s" %ip)
+				thread = get.get('http://'+ip+':8081/nexmo_file','',data_to_be_sent);
+				thread.start();
+    # raise web.seeother('/upload')
 class upload:
 	def __init_(self):
 		pass
@@ -103,9 +122,9 @@ class upload:
 	def POST(self):
 		#syslog.syslog("AALU: In Upload POST trying to do base.POST")
 		data = web.input(myfile={})
-		syslog.syslog("AALU: Data " + str(data))
+		#syslog.syslog("AALU: Data " + str(data))
 		#RUN: change the directory here based on machine
-		filedir = '/home/cted-server/FilesToBeUploadedAWS' 
+		filedir = '/home/talal/FilesToBeUploadedAWS' 
 		mc = pylibmc.Client(["127.0.0.1"], binary=True, behaviors={"tcp_nodelay": True, "ketama": True})
 		if mc.get('id') is None:
 			mc.set('id',0)
@@ -114,11 +133,14 @@ class upload:
 		if 'myfile' in data: 
 			filepath=data.myfile.filename.replace('\\','/') # replaces the windows-style slashes with linux ones.
 			filename=filepath.split('/')[-1] # splits the and chooses the last part (the filename with extension)
-
+			syslog.syslog("AALU: filename = %s" %filename)
 			fout = open(filedir +'/'+ filename,'w') # creates the file where the uploaded file should be stored
+			#syslog.syslog("AALU: in if")
 			fout.write(data.myfile.file.read()) # writes the uploaded file to the newly created file.
 			fout.close() # closes the file, upload complete.
-			syslog.syslog("AALU: post random file:%s,%s,%s" %(str(time.time()),req_id,filedir+'/'+filename))
+			global file_to_ip
+			file_to_ip[filename]=filename.split(':')[1]	
+			syslog.syslog("AALU: post random file:%s,%s,%s" %(str(time.time()),req_id,filename))
 			base.POST(req_id, "SEN", str(filedir+'/'+filename))
             
             # thread = uploader.file_uploader('http://128.122.140.120:8888/ivr_server', '', filedir + '/' + filename)

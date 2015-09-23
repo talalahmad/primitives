@@ -17,6 +17,7 @@ import vbts_credit
 
 urls = ("/twilio_sms", "twilio_sms",
         "/nexmo_sms", "nexmo_sms",
+        "/nexmo_file", "nexmo_file",
         "/nexmo_delivery", "nexmo_delivery",
         "/out_twilio_sms", "out_twilio_sms",
         "/out_nexmo_sms", "out_nexmo_sms",
@@ -124,6 +125,19 @@ class twilio_sms(incoming_sms):
         else:
             raise web.NotFound()
 
+class nexmo_file:
+    def __init__(self):
+        pass
+    def GET(self):
+        print "some shit"
+#        syslog.syslog("RAPID: in GET of nexmo_file")
+        user_data = web.input()
+        if len(user_data) is 2:
+            post_ret = user_data['ret']
+            app = user_data['app']
+            syslog.syslog("RAPID: post random ret:%s,%s,%s" %(post_ret,app,str(time.time())))
+
+
 class nexmo_sms(incoming_sms):
     """
     Class for handling incoming messages from Nexmo.
@@ -139,7 +153,7 @@ class nexmo_sms(incoming_sms):
             from_ = str(data.msisdn)
             body = str(data.text)
             current_time = time.time()
-            syslog.syslog("RAPID: " + "Response time and message: " + str(current_time) + " body:" + body)
+            syslog.syslog("RAPID: post sms ret:%s,%s,%s" %(body,app,str(time.time())));
             self.fs_ic.send(to, from_, body)
             # syslog.syslog("AALU: Response time and message: " + current_time + " " +  body)
             self.bill(to, from_)
