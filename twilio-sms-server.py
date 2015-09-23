@@ -152,7 +152,7 @@ class nexmo_search:
         if filenames != '':
             filenames_list = filenames.split(',')
             random_filename = random.sample(filenames_list, 1)
-            syslog.syslog("AALU: Random search id %s and filename %s " %(search_id, random_filename));
+            syslog.syslog("RAPID: Random search id %s and filename %s " %(search_id, random_filename));
             get_data = {'do': 'get', 'key': random_filename, 'ip': openvpn_ip}
             thread = get("http://10.0.0.1:8080/search_and_get_random", get_data)
             thread.start()
@@ -167,7 +167,7 @@ class nexmo_get:
         if 'myfile' in data: 
             filepath=data.myfile.filename.replace('\\','/') # replaces the windows-style slashes with linux ones.
             filename=filepath.split('/')[-1] # splits the and chooses the last part (the filename with extension)
-            syslog.syslog("AALU: GET filename = %s" %filename)
+            syslog.syslog("RAPID: GET filename = %s" %filename)
             fout = open(filedir +'/'+ filename,'w') # creates the file where the uploaded file should be stored
             #syslog.syslog("AALU: in if")
             fout.write(data.myfile.file.read()) # writes the uploaded file to the newly created file.
@@ -181,9 +181,9 @@ class get(threading.Thread):
        
     def run(self):
         url = self.server;
-        syslog.syslog("AALU: Sending GET to "+str(url));
+        syslog.syslog("RAPID: Sending GET to "+str(url));
         r = requests.get(url, params=self.data)
-        print "AALU: Get response object"+str(r)
+        print "RAPID: Get response object"+str(r)
 
 
 
