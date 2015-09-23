@@ -25,11 +25,41 @@ urls = (
 	"/server","server",
 	"/ivr_server","ivr_server",
 	"/random_server","random_server",
-	"/nexmo_file","nexmo_file"
+	"/nexmo_file","nexmo_file",
+	"/search_and_get","search_and_get"
 	)
 mpl = {}
+random = {}
 # This class contains the information regarding a BTS node. It will tell the node who it is. 
 # This will have an IP and port where the node is listening. 
+class search_and_get:
+	def __init__(self):
+		pass
+	def GET(self):
+		user_data = web.input()
+		global random
+		if user_data['do'] == 'search':
+			#search on aws for a random file uploaded by someone else. For example if you are calling this from rapidcell you can search with my openvpn IP to try and find a file i have uploaded
+			result = "";
+			if random[user_data['key']] is not None:
+				#send a non-empty string to the user_data['ip']
+				for i in range(0,min(len(random[user_data['key']]),5)):
+					result = result+","+random[user_data['key']][i]
+			#send result variable back.
+			data_to_be_sent = {};
+			data_to_be_sent['result'] = result
+			data_to_be_sent['ip'] = user_data['ip'] #this is the openvpn ip coming with the request
+			data_to_be_send['id'] = user_data['id']
+			thread = get.get('http://128.122.140.120:8080/search_handler','',data_to_be_sent); #node_name coming in each request is the ip of the handler 
+			thread.start(); 
+		elif user_data['do'] == 'get':
+			syslog.syslog("BALU: sending file back %s,%s" %(str(time.time()),user_data['key']))
+			filedir = '/home/ec2-user/random' # change this to the directory you want to store the file in.
+			filename = user_data['key']
+			thread = uploader.file_uploader('http://128.122.140.120:8080/get_handler', '', filedir + '/' + filename)
+			thread.start()
+			#get a file 
+
 class ivr_server:
 	def __init__(self):
 		pass
@@ -66,6 +96,10 @@ class random_server:
 			fout = open(filedir +'/'+ filename,'w') # creates the file where the uploaded file should be stored
 			fout.write(x.myfile.file.read()) # writes the uploaded file to the newly created file.
 			fout.close() # closes the file, upload complete.
+			global random;
+			if random[filename.split(':')[1]] is None:
+				random[filename.split(':')[1]] = []
+			random[filename.split(':')[1]].append(filename)
 			syslog.syslog("BALU: time = %s" %str(time.time()))
 			syslog.syslog("BALU: random post:%s,%s" %(filename,str(time.time())))
 			data_to_be_sent = {};
