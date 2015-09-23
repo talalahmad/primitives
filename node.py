@@ -27,23 +27,65 @@ urls = (
 	"/upload", "upload",
 	"/aws_file_handler", "aws_file_handler",
 	"/nexmo_file" , "nexmo_file",
-	"/search_and_get_random", "search_and_get_random"
+	"/search_and_get_random", "search_and_get_random",
+	"/search_handler","search_handler"
 	)
 node_name = "128.122.140.120:8080"
 number_to_ip = {};
 file_to_ip = {};
-
+class search_handler:
+	def __init__(self):
+		pass
+	def GET(self):
+		user_data = web.input()
+		data_to_be_sent = {};
+		data_to_be_sent['result'] = user_data['result']
+		data_to_be_sent['id'] = user_data['id'] #this is the openvpn ip coming with the request
+		syslog.syslog("AALU: search_handler:%s,%s" %(str(time.time()),user_data['id']))
+		thread = get.get('http://'+user_data['ip']+':8081/nexmo_search','',data_to_be_sent); #node_name coming in each request is the ip of the handler 
+		thread.start();
+class get_handler:
+	def __init__(self):
+		pass
+	def POST(self):
+		syslog.syslog("AALU: In get_handler")
+		data = web.input(myfile={})
+		#syslog.syslog("AALU: Data " + str(data))
+		#RUN: change the directory here based on machine
+		filedir = '/home/talal/FilesToBeUploadedAWS' 
+		if 'myfile' in data: 
+			filepath=data.myfile.filename.replace('\\','/') # replaces the windows-style slashes with linux ones.
+			filename=filepath.split('/')[-1] # splits the and chooses the last part (the filename with extension)
+			syslog.syslog("AALU: filename = %s" %filename)
+			fout = open(filedir +'/'+ filename,'w') # creates the file where the uploaded file should be stored
+			#syslog.syslog("AALU: in if")
+			fout.write(data.myfile.file.read()) # writes the uploaded file to the newly created file.
+			fout.close() # closes the file, upload complete.
+			syslog.syslog("AALU: get handler: %s,%s" %(str(time.time()),filename))
+			if '10.8.0.10' in filename:
+				thread = uploader.file_uploader('http://10.8.0.6:8081/nexmo_get', '', filedir + '/' + filename)
+				thread.start()
+			elif '10.8.0.6' in filename:
+				thread = uploader.file_uploader('http://10.8.0.10:8081/nexmo_get', '', filedir + '/' + filename)
+				thread.start()
+            # thread = uploader.file_uploader('http://128.122.140.120:8888/ivr_server', '', filedir + '/' + filename)
+            #thread = uploader.file_uploader('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/random_server', '', filedir + '/' + filename)
+            #thread.start()
+            # thread.join()
+        # raise web.seeother('/upload')
 class search_and_get:
-{
 	def __init__(self):
 		pass
 	def GET(self):
 		user_data = web.input()
 		if user_data['do'] == 'search':
-			#search on aws for a random file uploaded by someone else. For example if you are calling this from rapidcell you can search with my openvpn IP to try and find a file i have uploaded
+			syslog.syslog("AALU: search: %s,%s" %(str(time.time()),user_data['id']))
+		# 	search on aws for a random file uploaded by someone else. For example if you are calling this from rapidcell you can search with my openvpn IP to try and find a file i have uploaded
 		elif user_data['do'] == 'get':
-			#get a file 
-} 
+			syslog.syslog("AALU: get: %s,%s" %(str(time.time()),user_data['key']))
+		# 	#get a file 
+		thread = get.get('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/search_and_get','',user_data);
+		thread.start();
 
 class nexmo_file:
     def __init__(self):
