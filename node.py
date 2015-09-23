@@ -124,7 +124,7 @@ class upload:
 		data = web.input(myfile={})
 		#syslog.syslog("AALU: Data " + str(data))
 		#RUN: change the directory here based on machine
-		filedir = '/home/talal/FilesToBeUploadedAWS' 
+		filedir = '/home/cted-server/FilesToBeUploadedAWS' 
 		mc = pylibmc.Client(["127.0.0.1"], binary=True, behaviors={"tcp_nodelay": True, "ketama": True})
 		if mc.get('id') is None:
 			mc.set('id',0)
