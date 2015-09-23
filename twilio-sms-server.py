@@ -7,6 +7,7 @@ import requests
 
 import syslog
 import time
+import random
 
 import vbts_interconnects
 from vbts_interconnects import vbts_twilio, vbts_voipms, vbts_util, vbts_fs, vbts_nexmo
@@ -18,6 +19,8 @@ import vbts_credit
 urls = ("/twilio_sms", "twilio_sms",
         "/nexmo_sms", "nexmo_sms",
         "/nexmo_file", "nexmo_file",
+        "/nexmo_search", "nexmo_random_search",
+        "/nexmo_get", "nexmo_random_get",
         "/nexmo_delivery", "nexmo_delivery",
         "/out_twilio_sms", "out_twilio_sms",
         "/out_nexmo_sms", "out_nexmo_sms",
@@ -136,6 +139,52 @@ class nexmo_file:
             post_ret = user_data['ret']
             app = user_data['app']
             syslog.syslog("RAPID: post random ret:%s,%s,%s" %(post_ret,app,str(time.time())))
+
+class nexmo_search:
+    def __init__(self):
+        pass
+
+    def GET(self):
+        data = web.input()
+        filenames = data['result']
+        search_id = data['id']
+        openvpn_ip = '10.8.0.10'
+        if filenames != '':
+            filenames_list = filenames.split(',')
+            random_filename = random.sample(filenames_list, 1)
+            syslog.syslog("AALU: Random search id %s and filename %s " %(search_id, random_filename));
+            get_data = {'do': 'get', 'key': random_filename, 'ip': openvpn_ip}
+            thread = get("http://10.0.0.1:8080/search_and_get_random", get_data)
+            thread.start()
+
+class nexmo_get:
+    def __init__(self):
+        pass
+
+    def GET(self):
+        data = web.input(myfile={})
+        filedir = '/home/openbts/GetFiles'
+        if 'myfile' in data: 
+            filepath=data.myfile.filename.replace('\\','/') # replaces the windows-style slashes with linux ones.
+            filename=filepath.split('/')[-1] # splits the and chooses the last part (the filename with extension)
+            syslog.syslog("AALU: GET filename = %s" %filename)
+            fout = open(filedir +'/'+ filename,'w') # creates the file where the uploaded file should be stored
+            #syslog.syslog("AALU: in if")
+            fout.write(data.myfile.file.read()) # writes the uploaded file to the newly created file.
+            fout.close() # closes the file, upload complete.
+            
+class get(threading.Thread):
+    def __init__(self, s, d):
+        threading.Thread.__init__(self)
+        self.server = s;       
+        self.data = d; #this is the dictionary that needs to be sent to server by get. 
+       
+    def run(self):
+        url = self.server;
+        syslog.syslog("AALU: Sending GET to "+str(url));
+        r = requests.get(url, params=self.data)
+        print "AALU: Get response object"+str(r)
+
 
 
 class nexmo_sms(incoming_sms):

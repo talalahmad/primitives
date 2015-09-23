@@ -34,7 +34,6 @@ number_to_ip = {};
 file_to_ip = {};
 
 class search_and_get:
-{
 	def __init__(self):
 		pass
 	def GET(self):
@@ -43,7 +42,7 @@ class search_and_get:
 			#search on aws for a random file uploaded by someone else. For example if you are calling this from rapidcell you can search with my openvpn IP to try and find a file i have uploaded
 		elif user_data['do'] == 'get':
 			#get a file 
-} 
+ 
 
 class nexmo_file:
     def __init__(self):
