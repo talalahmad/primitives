@@ -33,6 +33,7 @@ def main():
 				data_to_be_sent['d'] = item[2] +","+item[3]+","+item[4]+","+item[5]
 				thread = get.get('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/server','',data_to_be_sent);
 			#	thread = get.get('http://0.0.0.0:8888/server','',data_to_be_sent);
+				syslog.syslog("AALU: in loop.py for MKP: %s,%s" %(str(time.time()),data_to_be_sent['d']))
 				thread.start();
 				thread.join();
 			#add if else based on the application for which data is being uploaded. 
@@ -40,12 +41,14 @@ def main():
 				data_to_be_sent['d'] = item[2]
                                 # thread = uploader.file_uploader('http://128.122.140.120:8888/ivr_server', '', data_to_be_sent['d'])
 				thread = uploader.file_uploader('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/ivr_server', '', data_to_be_sent['d'])
+				syslog.syslog("AALU: in loop.py for IVR: %s,%s" %(str(time.time()),data_to_be_sent['d']))
 				thread.start()
 				thread.join()
 			elif item[1] == 'SEN':
 				data_to_be_sent['d'] = item[2]
 
 				thread = uploader.file_uploader('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/random_server', '', data_to_be_sent['d'])
+				syslog.syslog("AALU: in loop.py for SEN: %s,%s" %(str(time.time()),data_to_be_sent['d']))
 				thread.start();
 				thread.join()
 

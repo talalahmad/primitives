@@ -12,6 +12,7 @@ import requests
 
 #My own scripts
 import get
+import uploader
 #from Log import log
 import syslog
 import time
@@ -41,7 +42,7 @@ class search_and_get:
 		if user_data['do'] == 'search':
 			#search on aws for a random file uploaded by someone else. For example if you are calling this from rapidcell you can search with my openvpn IP to try and find a file i have uploaded
 			result = "";
-			if random[user_data['key']] is not None:
+			if user_data['key'] in random: #is not None:
 				#send a non-empty string to the user_data['ip']
 				for i in range(0,min(len(random[user_data['key']]),5)):
 					result = result+","+random[user_data['key']][i]
@@ -49,7 +50,7 @@ class search_and_get:
 			data_to_be_sent = {};
 			data_to_be_sent['result'] = result
 			data_to_be_sent['ip'] = user_data['ip'] #this is the openvpn ip coming with the request
-			data_to_be_send['id'] = user_data['id']
+			data_to_be_sent['id'] = user_data['id']
 			thread = get.get('http://128.122.140.120:8080/search_handler','',data_to_be_sent); #node_name coming in each request is the ip of the handler 
 			thread.start(); 
 		elif user_data['do'] == 'get':
@@ -97,7 +98,7 @@ class random_server:
 			fout.write(x.myfile.file.read()) # writes the uploaded file to the newly created file.
 			fout.close() # closes the file, upload complete.
 			global random;
-			if random[filename.split(':')[1]] is None:
+			if filename.split(':')[1] not in random:
 				random[filename.split(':')[1]] = []
 			random[filename.split(':')[1]].append(filename)
 			syslog.syslog("BALU: time = %s" %str(time.time()))

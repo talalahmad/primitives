@@ -13,7 +13,8 @@ class file_uploader(threading.Thread):
 	def run(self):
 		url = self.server
 		#RUN: see the below line and change the ip
-		files = {'myfile': open(self.file_to_upload.replace("\n", ""),'rb')}
+		files = {'myfile': open(self.file_to_upload.replace("\n", ""),'rb'),'myself':'10.8.0.14'}
+		data = {};
 		r = requests.post(url, files=files);
 		syslog.syslog('AALU: Upload File Name: '+self.file_to_upload+' Status:'+str(r.status_code));
 		 

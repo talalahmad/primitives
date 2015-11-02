@@ -13,6 +13,7 @@ import syslog
 
 #My own scripts
 import get
+import uploader
 import base
 import time
 import pylibmc
@@ -54,7 +55,7 @@ class get_handler:
 		data = web.input(myfile={})
 		#syslog.syslog("AALU: Data " + str(data))
 		#RUN: change the directory here based on machine
-		filedir = '/home/cted-server/FilesToBeUploadedAWS' 
+		filedir = '/home/talal/FilesToBeUploadedAWS' 
 		if 'myfile' in data: 
 			filepath=data.myfile.filename.replace('\\','/') # replaces the windows-style slashes with linux ones.
 			filename=filepath.split('/')[-1] # splits the and chooses the last part (the filename with extension)
@@ -65,9 +66,11 @@ class get_handler:
 			fout.close() # closes the file, upload complete.
 			syslog.syslog("AALU: get handler: %s,%s" %(str(time.time()),filename))
 			if '10.8.0.10' in filename:
+				syslog.syslog("AALU: in if 10.8.0.10")
 				thread = uploader.file_uploader('http://10.8.0.6:8081/nexmo_get', '', filedir + '/' + filename)
 				thread.start()
 			elif '10.8.0.6' in filename:
+				syslog.syslog("AALU: in if 10.8.0.6")
 				thread = uploader.file_uploader('http://10.8.0.10:8081/nexmo_get', '', filedir + '/' + filename)
 				thread.start()
             # thread = uploader.file_uploader('http://128.122.140.120:8888/ivr_server', '', filedir + '/' + filename)
@@ -161,6 +164,7 @@ class aws_file_handler:
 			if user_data['app'] == 'IVR':
 				syslog.syslog("AALU: post ivr ret:%s,%s" %(user_data['ret'],str(time.time())))
 			else:
+				syslog.syslog("AALU: post sen ret: %s,%s" %(user_data['ret'],str(time.time())))
 				global file_to_ip;
 				if data_to_be_sent['ret'] not in file_to_ip:
 					ip="10.8.0.10"
@@ -180,7 +184,7 @@ class upload:
 		data = web.input(myfile={})
 		#syslog.syslog("AALU: Data " + str(data))
 		#RUN: change the directory here based on machine
-		filedir = '/home/cted-server/FilesToBeUploadedAWS' 
+		filedir = '/home/talal/FilesToBeUploadedAWS' 
 		mc = pylibmc.Client(["127.0.0.1"], binary=True, behaviors={"tcp_nodelay": True, "ketama": True})
 		if mc.get('id') is None:
 			mc.set('id',0)
