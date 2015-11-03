@@ -72,7 +72,7 @@ class storage:
 		# else:
 		# 	return "number of parameters is not 3 or 5, 'imsi' and 'name' and 'mode' required"
 
-	def already_exists(self, imsi, name):
+	def already_exists(self, imsi):
 		server_db = sqlite3.connect(self.db_location);
 		cursor = server_db.cursor();
 		cursor.execute("Select * from ZONE_USERS where imsi=?", imsi);

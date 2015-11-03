@@ -225,14 +225,14 @@ class server:
 			if output is True:
 				#have to send back a response saying that i have saved something. 
 				data_to_be_sent = {};
-				data_to_be_sent['i'] = i;
+				data_to_be_sent['i'] = identity;
 				data_to_be_sent['t'] = t;
 				data_to_be_sent['d'] = "success"
 				thread = get.get(node_name,'',data_to_be_sent); #node_name coming in each request is the ip of the handler 
 				thread.start();
 			elif output is False:
 				data_to_be_sent = {};
-				data_to_be_sent['i'] = i;
+				data_to_be_sent['i'] = identity;
 				data_to_be_sent['t'] = t;
 				data_to_be_sent['d'] = "already"
 				thread = get.get(node_name,'',data_to_be_sent); #node_name coming in each request is the ip of the handler 
