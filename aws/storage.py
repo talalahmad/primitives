@@ -21,7 +21,7 @@ class storage:
 				server_db = sqlite3.connect(self.db_location);
 				cursor = server_db.cursor();
 				#from_name should ideally come from nexmo... but it will be costly so i am not doing anything here
-				cursor.execute("insert into zone_users values(?,?,?,?,?)",(tstamp,from_number,from_name,node_name,"none"));
+				cursor.execute("insert into zone_users values(?,?,?,?,?)",(tstamp,from_number,from_name,node_name,"none",));
 				server_db.commit();
 		 		server_db.close();
 		 		return True;
@@ -75,7 +75,7 @@ class storage:
 	def already_exists(self, imsi):
 		server_db = sqlite3.connect(self.db_location);
 		cursor = server_db.cursor();
-		cursor.execute("Select * from ZONE_USERS where imsi=?", imsi);
+		cursor.execute("Select * from ZONE_USERS where imsi=?", (imsi,));
 		db_output = cursor.fetchall()
 		if len(db_output) == 0:
 			return False;

@@ -1,11 +1,12 @@
 import get 
 import syslog
+import time
 
 ## configuration setting 
 user_number = 0;
 myself = "http://128.122.140.115:8080/little_server"
 ### fill this as per experiment 
-
+how_many = 100;
 
 def make_new_user():
 	global user_number;
@@ -20,12 +21,12 @@ def make_new_user():
 	data_to_be_sent['d'] = "something"+","+str(user_id)+","+str(user_id)+","+myself;
 
 	syslog.syslog("AALU: uid=%s and time=%s" %(user_id,str(time.time())))
-#	thread = get.get('http://ec2-52-29-11-132.eu-central-1.compute.amazonaws.com:8080/server','',data_to_be_sent);
-	thread = get.get('http://0.0.0.0:8081/server','',data_to_be_sent);
+	thread = get.get('http://ec2-52-29-11-132.eu-central-1.compute.amazonaws.com:8080/server','',data_to_be_sent);
+#	thread = get.get('http://0.0.0.0:8081/server','',data_to_be_sent);
 	thread.start();
+#	thread.join();
 
 
 
-
-
-make_new_user();
+for i in range(0,how_many):
+	make_new_user();

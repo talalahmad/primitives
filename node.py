@@ -40,9 +40,9 @@ class little_server:
 	def GET(self):
 		user_data = web.input()
 		user = user_data['i'] 
-		if user_data['d'] is "success" and user_data['t'] is "NEW":
+		if (user_data['d'] == "success" or user_data['d'] == "already") and user_data['t'] == "NEW":
 			syslog.syslog("AALU: uid=%s and time=%s" %(user,str(time.time())))
-			
+
 
 class search_handler:
 	def __init__(self):
