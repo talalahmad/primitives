@@ -1,5 +1,6 @@
 import sqlite3
 from os.path import expanduser
+import time
 
 class storage:
 	def __init__(self):
@@ -13,54 +14,63 @@ class storage:
 		server_db.commit();
 		server_db.close();
 
-	def GET(self, user_data):
-	#	user_data= web.input();
-
-		if len(user_data) is 4: #message is coming from one of the BTS nodes in zone
-			if user_data['mode'] == 'gateway':
-				imsi = user_data['imsi'];
-				name = user_data['name'];
-				node = user_data['node'];
-				#check if it already exists or not
-
-				if self.already_exists(imsi,name) is False:
-					
-					tstamp = datetime.utcnow();
-					resolver = self.hash.get_node(user_data['imsi']);
-					
-					#add to zone_users
-					server_db = sqlite3.connect(self.db_location);
-					cursor = server_db.cursor();
-					cursor.execute("insert into zone_users values(?,?,?,?,?)",(tstamp,imsi,name,node,resolver));
-
-					#send it to resolver
-					self.node.send_data_to_gateway(imsi,name,"resolver");
-
-				else:
-					return "user already exists in zone_users";
-			else:
-				return "invalid mode";
-
-		elif len(user_data) is 5: # message is coming from a gateway node 
-			if user_data['mode'] == 'resolver':
-				#add to resolved
-				tstamp = datetime.utcnow();
-				imsi = user_data['imsi'];
-				name = user_data['name'];
-				node = user_data['node'];
-				gateway = user_data['gateway'];
-
+	def store(self,from_number,from_name,node_name,t): #from_number is the imsi because it is the phone identity
+		if t == "NEW":
+			if self.alread_exists(from_number) is False:
+				tstamp = time.time()
 				server_db = sqlite3.connect(self.db_location);
-				cursor= server_db.cursor();
-				cursor.execute("insert into resolved values(?,?,?,?,?)",(tstamp,imsi,name,node,gateway));
+				cursor = server_db.cursor();
+				#from_name should ideally come from nexmo... but it will be costly so i am not doing anything here
+				cursor.execute("insert into zone_users values(?,?,?,?,?)",(tstamp,from_number,from_name,node_name,"none"));
 				server_db.commit();
-				server_db.close();
-				return "user added to the resolver's records"
-
+		 		server_db.close();
+		 		return True;
 			else:
-				return "invalid mode"
-		else:
-			return "number of parameters is not 3 or 5, 'imsi' and 'name' and 'mode' required"
+				return False;
+
+
+		# if len(user_data) is 3: #message is coming from one of the BTS node
+		# 	if user_data['t'] == 'NEW':
+		# 		imsi = user_data[''];
+				
+		# 		if self.already_exists(imsi,name) is False:
+					
+		# 			tstamp = datetime.utcnow();
+		# 			resolver = self.hash.get_node(user_data['imsi']);
+					
+		# 			#add to zone_users
+		# 			server_db = sqlite3.connect(self.db_location);
+		# 			cursor = server_db.cursor();
+		# 			cursor.execute("insert into zone_users values(?,?,?,?,?)",(tstamp,imsi,name,node,resolver));
+
+		# 			#send it to resolver
+		# 			self.node.send_data_to_gateway(imsi,name,"resolver");
+
+		# 		else:
+		# 			return "user already exists in zone_users";
+		# 	else:
+		# 		return "invalid mode";
+
+		# elif len(user_data) is 5: # message is coming from a gateway node 
+		# 	if user_data['mode'] == 'resolver':
+		# 		#add to resolved
+		# 		tstamp = datetime.utcnow();
+		# 		imsi = user_data['imsi'];
+		# 		name = user_data['name'];
+		# 		node = user_data['node'];
+		# 		gateway = user_data['gateway'];
+
+		# 		server_db = sqlite3.connect(self.db_location);
+		# 		cursor= server_db.cursor();
+		# 		cursor.execute("insert into resolved values(?,?,?,?,?)",(tstamp,imsi,name,node,gateway));
+		# 		server_db.commit();
+		# 		server_db.close();
+		# 		return "user added to the resolver's records"
+
+		# 	else:
+		# 		return "invalid mode"
+		# else:
+		# 	return "number of parameters is not 3 or 5, 'imsi' and 'name' and 'mode' required"
 
 	def already_exists(self, imsi, name):
 		server_db = sqlite3.connect(self.db_location);

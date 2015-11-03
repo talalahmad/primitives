@@ -221,8 +221,23 @@ class server:
 		# New user for naming and addressing testing
 		elif(t == "NEW"):
 			disk_storage = storage.storage()
-			output = disk_storage.GET(user_data)
-			print output
+			output = disk_storage.store(from_number,from_name,node_name,t)
+			if output is True:
+				#have to send back a response saying that i have saved something. 
+				data_to_be_sent = {};
+				data_to_be_sent['i'] = i;
+				data_to_be_sent['t'] = t;
+				data_to_be_sent['d'] = "success"
+				thread = get.get(node_name,'',data_to_be_sent); #node_name coming in each request is the ip of the handler 
+				thread.start();
+			elif output is False:
+				data_to_be_sent = {};
+				data_to_be_sent['i'] = i;
+				data_to_be_sent['t'] = t;
+				data_to_be_sent['d'] = "already"
+				thread = get.get(node_name,'',data_to_be_sent); #node_name coming in each request is the ip of the handler 
+				thread.start();
+				#have to send back a response saying that the user already exists 
 
 class node:
 	def __init__(self):

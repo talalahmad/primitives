@@ -30,11 +30,20 @@ urls = (
 	"/nexmo_file" , "nexmo_file",
 	"/search_and_get_random", "search_and_get_random",
 	"/search_handler","search_handler",
-	"/get_handler", "get_handler"
+	"/get_handler", "get_handler",
+	"/little_server", "little_server"
 	)
 node_name = "128.122.140.120:8080"
 number_to_ip = {};
 file_to_ip = {};
+class little_server:
+	def GET(self):
+		user_data = web.input()
+		user = user_data['i'] 
+		if user_data['d'] is "success" and user_data['t'] is "NEW":
+			syslog.syslog("AALU: uid=%s and time=%s" %(user,str(time.time())))
+			
+
 class search_handler:
 	def __init__(self):
 		pass

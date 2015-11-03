@@ -1,8 +1,9 @@
 import get 
 
+
 ## configuration setting 
 user_number = 0;
-myself = "bts1"
+myself = "http://128.122.140.115:8080/little_server"
 ### fill this as per experiment 
 
 
@@ -19,8 +20,10 @@ def make_new_user():
 	data_to_be_sent['d'] = "something"+","+str(user_id)+","+str(user_id)+","+myself;
 
 	#thread = get.get('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/search_and_get','',data_to_be_sent);
-	thread = get.get('http://0.0.0.0:8080/server','',data_to_be_sent);
+	thread = get.get('http://ec2-52-29-11-132.eu-central-1.compute.amazonaws.com:8080/server','',data_to_be_sent);
 	thread.start();
+
+
 
 
 
