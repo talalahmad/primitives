@@ -16,7 +16,7 @@ class storage:
 
 	def store(self,from_number,from_name,node_name,t): #from_number is the imsi because it is the phone identity
 		if t == "NEW":
-			if self.alread_exists(from_number) is False:
+			if self.already_exists(from_number) is False:
 				tstamp = time.time()
 				server_db = sqlite3.connect(self.db_location);
 				cursor = server_db.cursor();
