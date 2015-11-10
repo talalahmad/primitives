@@ -7,7 +7,7 @@ import multiprocessing
 ## configuration settings
 ### fill this as per experiment  
 user_number = 1000000000;
-myself = "http://128.122.140.115:"
+myself = "http://0.0.0.0:"
 myself2 = "/little_server"
 how_many = 1000;
 

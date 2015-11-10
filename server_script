@@ -1,6 +1,6 @@
 #!/bin/sh
-python ~/Dropbox/primitives/node.py 8080 &
-python ~/Dropbox/primitives/node.py 8081 &
-python ~/Dropbox/primitives/node.py 8082 &
-python ~/Dropbox/primitives/node.py 8083 &
-python ~/Dropbox/primitives/node.py 8084 &
+python ~/primitives/node2.py 8080 &
+python ~/primitives/node2.py 8081 &
+python ~/primitives/node2.py 8082 &
+python ~/primitives/node2.py 8083 &
+python ~/primitives/node2.py 8084 &
