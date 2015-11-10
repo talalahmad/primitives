@@ -7,7 +7,7 @@ import multiprocessing
 ## configuration settings
 ### fill this as per experiment  
 user_number = 1000000000;
-myself = "http://0.0.0.0:"
+myself = "http://127.0.0.1:"
 myself2 = "/little_server"
 how_many = 1000;
 
@@ -29,7 +29,7 @@ def make_new_users(user_number, myself, how_many):
 		data_to_be_sent['d'] = "something"+","+str(user_id)+","+str(user_id)+","+myself;
 
 		syslog.syslog("AALU: uid=%s and time=%s" %(user_id,str(time.time())))
-		thread[i] = get.get('http://0.0.0.0:8090/server','',data_to_be_sent);
+		thread[i] = get.get('http://127.0.0.1:8090/server','',data_to_be_sent);
 	#	thread = get.get('http://0.0.0.0:8081/server','',data_to_be_sent);
 		print i
 		thread[i].start();
@@ -54,7 +54,7 @@ syslog.syslog("AALU: starter starting here here here")
 for i in range(0,5):
 	bts_process.append('')
 for i in range(0,5):
-	bts_process[i] = bts_client(user_number+(i*1000000000), myself+str(port+i)+myself2, 300);
+	bts_process[i] = bts_client(user_number+(i*1000000000), myself+str(port+i)+myself2, 100);
 	bts_process[i].start();
 for i in range(0,5):
 	bts_process[i].join();
