@@ -16,7 +16,7 @@ import get
 import uploader
 #import base
 import time
-import pylibmc
+#import pylibmc
 
 urls = (
 	"/", "view_data",
@@ -184,102 +184,102 @@ class aws_file_handler:
 				thread = get.get('http://'+ip+':8081/nexmo_file','',data_to_be_sent);
 				thread.start();
     # raise web.seeother('/upload')
-class upload:
-	def __init_(self):
-		pass
+# class upload:
+# 	def __init_(self):
+# 		pass
 
-	def POST(self):
-		#syslog.syslog("AALU: In Upload POST trying to do base.POST")
-		data = web.input(myfile={})
-		#syslog.syslog("AALU: Data " + str(data))
-		#RUN: change the directory here based on machine
-		filedir = '/home/talal/FilesToBeUploadedAWS' 
-		mc = pylibmc.Client(["127.0.0.1"], binary=True, behaviors={"tcp_nodelay": True, "ketama": True})
-		if mc.get('id') is None:
-			mc.set('id',0)
-		req_id = str(mc.get('id'))
-		mc['id'] = mc['id']+1
-		if 'myfile' in data: 
-			filepath=data.myfile.filename.replace('\\','/') # replaces the windows-style slashes with linux ones.
-			filename=filepath.split('/')[-1] # splits the and chooses the last part (the filename with extension)
-			syslog.syslog("AALU: filename = %s" %filename)
-			fout = open(filedir +'/'+ filename,'w') # creates the file where the uploaded file should be stored
-			#syslog.syslog("AALU: in if")
-			fout.write(data.myfile.file.read()) # writes the uploaded file to the newly created file.
-			fout.close() # closes the file, upload complete.
-			global file_to_ip
-			file_to_ip[filename]=filename.split(':')[1]	
-			syslog.syslog("AALU: post random file:%s,%s,%s" %(str(time.time()),req_id,filename))
-		#	base.POST(req_id, "SEN", str(filedir+'/'+filename))
+# 	def POST(self):
+# 		#syslog.syslog("AALU: In Upload POST trying to do base.POST")
+# 		data = web.input(myfile={})
+# 		#syslog.syslog("AALU: Data " + str(data))
+# 		#RUN: change the directory here based on machine
+# 		filedir = '/home/talal/FilesToBeUploadedAWS' 
+# 		mc = pylibmc.Client(["127.0.0.1"], binary=True, behaviors={"tcp_nodelay": True, "ketama": True})
+# 		if mc.get('id') is None:
+# 			mc.set('id',0)
+# 		req_id = str(mc.get('id'))
+# 		mc['id'] = mc['id']+1
+# 		if 'myfile' in data: 
+# 			filepath=data.myfile.filename.replace('\\','/') # replaces the windows-style slashes with linux ones.
+# 			filename=filepath.split('/')[-1] # splits the and chooses the last part (the filename with extension)
+# 			syslog.syslog("AALU: filename = %s" %filename)
+# 			fout = open(filedir +'/'+ filename,'w') # creates the file where the uploaded file should be stored
+# 			#syslog.syslog("AALU: in if")
+# 			fout.write(data.myfile.file.read()) # writes the uploaded file to the newly created file.
+# 			fout.close() # closes the file, upload complete.
+# 			global file_to_ip
+# 			file_to_ip[filename]=filename.split(':')[1]	
+# 			syslog.syslog("AALU: post random file:%s,%s,%s" %(str(time.time()),req_id,filename))
+# 		#	base.POST(req_id, "SEN", str(filedir+'/'+filename))
             
-            # thread = uploader.file_uploader('http://128.122.140.120:8888/ivr_server', '', filedir + '/' + filename)
-            #thread = uploader.file_uploader('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/random_server', '', filedir + '/' + filename)
-            #thread.start()
-            # thread.join()
-        # raise web.seeother('/upload')
+#             # thread = uploader.file_uploader('http://128.122.140.120:8888/ivr_server', '', filedir + '/' + filename)
+#             #thread = uploader.file_uploader('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/random_server', '', filedir + '/' + filename)
+#             #thread.start()
+#             # thread.join()
+#         # raise web.seeother('/upload')
 
-class marketplace_real:
-	def __init_(self):
-		pass
-	#	self.node = node();
-	#	mc['id'] =  0; # the id of every post request
-		#self.base = base.primitives();
-	def POST(self):
-		global number_to_ip;
-		global node_name; # this contains the IP of the node
-		#syslog.syslog('AALU: in post')
-		mc = pylibmc.Client(["127.0.0.1"], binary=True, behaviors={"tcp_nodelay": True, "ketama": True})
-		if mc.get('id') is None:
-			mc.set('id',0)
-		req_id = str(mc.get('id'))
-		mc['id'] = mc['id']+1
-		user_data=web.input();
-		if len(user_data) is 5:
-		#	syslog.syslog("AALU: I Got something Good in marketplace_real");
-			from_name = user_data['from_name'];
-			destination = user_data['destination']
-			from_number = user_data['from_number']
-			ip = user_data['ip'] #ip of the rapidcell node 
+# class marketplace_real:
+# 	def __init_(self):
+# 		pass
+# 	#	self.node = node();
+# 	#	mc['id'] =  0; # the id of every post request
+# 		#self.base = base.primitives();
+# 	def POST(self):
+# 		global number_to_ip;
+# 		global node_name; # this contains the IP of the node
+# 		#syslog.syslog('AALU: in post')
+# 		mc = pylibmc.Client(["127.0.0.1"], binary=True, behaviors={"tcp_nodelay": True, "ketama": True})
+# 		if mc.get('id') is None:
+# 			mc.set('id',0)
+# 		req_id = str(mc.get('id'))
+# 		mc['id'] = mc['id']+1
+# 		user_data=web.input();
+# 		if len(user_data) is 5:
+# 		#	syslog.syslog("AALU: I Got something Good in marketplace_real");
+# 			from_name = user_data['from_name'];
+# 			destination = user_data['destination']
+# 			from_number = user_data['from_number']
+# 			ip = user_data['ip'] #ip of the rapidcell node 
 
-			if from_number not in number_to_ip:
-				number_to_ip[from_number] = ip
+# 			if from_number not in number_to_ip:
+# 				number_to_ip[from_number] = ip
 
-			body = str(user_data['body'])
-			body = body+","+from_number+","+from_name+","+node_name #appending useful information to the body
-		#	syslog.syslog("AALU: Got SMS:"+body)
-			if 'sell' in body or 'Sell' in body:
-		#		syslog.syslog("AALU: this is a sell message and needs to be put in the queue")
+# 			body = str(user_data['body'])
+# 			body = body+","+from_number+","+from_name+","+node_name #appending useful information to the body
+# 		#	syslog.syslog("AALU: Got SMS:"+body)
+# 			if 'sell' in body or 'Sell' in body:
+# 		#		syslog.syslog("AALU: this is a sell message and needs to be put in the queue")
 
-				string = "AALU: post: %s,%s,%s,%s" %(str(time.time()),req_id,"MKP",body)
-				syslog.syslog(string);
-			#	base.POST(req_id,"MKP",body);
-				#mc['id'] =  mc['id']+1;
-			elif 'search' in body or 'Search' in body:
-				data_to_be_sent = {}
-				#req_id = str(mc['id']+1)
-				data_to_be_sent['i'] = req_id
-				#mc['id'] =  mc['id']+1;
-				data_to_be_sent['t'] = "MKP"
-				data_to_be_sent['d'] = body
-				syslog.syslog("AALU: search: %f,%s,%s,%s" %(time.time(),req_id,"MKP",body))
-				#thread = get.get('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/server','',data_to_be_sent);
-				thread = get.get('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/server','',data_to_be_sent);				
-				thread.start();
-			elif 'buy' in body or 'Buy' in body:
-				data_to_be_sent = {}
-				data_to_be_sent['i'] = req_id
-				#mc['id'] =  mc['id']+1;
-				data_to_be_sent['t'] = "MKP"
-				data_to_be_sent['d'] = body
-				syslog.syslog("AALU: get: %f,%s,%s,%s" %(time.time(),req_id,"MKP",body))
-				thread = get.get('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/server','',data_to_be_sent);
-				#thread = get.get('http://0.0.0.0:8888/server','',data_to_be_sent);
-				thread.start();
-			else:
-				syslog.syslog("AALU: It should not reach here because text contains sell")
-				#
-			#thread = get.get('http://10.8.0.10:8081/nexmo_sms','',data_to_be_sent);
-			#thread.start();
+# 				string = "AALU: post: %s,%s,%s,%s" %(str(time.time()),req_id,"MKP",body)
+# 				syslog.syslog(string);
+# 			#	base.POST(req_id,"MKP",body);
+# 				#mc['id'] =  mc['id']+1;
+# 			elif 'search' in body or 'Search' in body:
+# 				data_to_be_sent = {}
+# 				#req_id = str(mc['id']+1)
+# 				data_to_be_sent['i'] = req_id
+# 				#mc['id'] =  mc['id']+1;
+# 				data_to_be_sent['t'] = "MKP"
+# 				data_to_be_sent['d'] = body
+# 				syslog.syslog("AALU: search: %f,%s,%s,%s" %(time.time(),req_id,"MKP",body))
+# 				#thread = get.get('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/server','',data_to_be_sent);
+# 				thread = get.get('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/server','',data_to_be_sent);				
+# 				thread.start();
+# 			elif 'buy' in body or 'Buy' in body:
+# 				data_to_be_sent = {}
+# 				data_to_be_sent['i'] = req_id
+# 				#mc['id'] =  mc['id']+1;
+# 				data_to_be_sent['t'] = "MKP"
+# 				data_to_be_sent['d'] = body
+# 				syslog.syslog("AALU: get: %f,%s,%s,%s" %(time.time(),req_id,"MKP",body))
+# 				thread = get.get('http://ec2-54-93-162-141.eu-central-1.compute.amazonaws.com:8080/server','',data_to_be_sent);
+# 				#thread = get.get('http://0.0.0.0:8888/server','',data_to_be_sent);
+# 				thread.start();
+# 			else:
+# 				syslog.syslog("AALU: It should not reach here because text contains sell")
+# 				#
+# 			#thread = get.get('http://10.8.0.10:8081/nexmo_sms','',data_to_be_sent);
+# 			#thread.start();
 
 			
 class marketplace:
