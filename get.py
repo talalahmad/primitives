@@ -1,10 +1,11 @@
 import requests
-import syslog
-import threading
+import logging
+import multiprocessing
 
-class get(threading.Thread):
+
+class get(multiprocessing.Process):
 	def __init__(self, s, p, d):
-		threading.Thread.__init__(self)
+		multiprocessing.Process.__init__(self)
 		self.server = s;
 		self.port = p;
 		self.data = d; #this is the dictionary that needs to be sent to server by get. 
@@ -15,7 +16,5 @@ class get(threading.Thread):
 
 	def run(self):
 		url = self.server;
-		syslog.syslog("AALU: Seding GET to "+str(url));
 		r = requests.get(url, params=self.data)
-		print "AALU: Get response object"+str(r)
-       
+        #logging.info('Get response object')

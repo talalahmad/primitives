@@ -1,10 +1,11 @@
 import requests
 import logging
-import threading
+import multiprocessing
 
-class get(threading.Thread):
+
+class get(multiprocessing.Process):
 	def __init__(self, s, p, d):
-		threading.Thread.__init__(self)
+		multiprocessing.Process.__init__(self)
 		self.server = s;
 		self.port = p;
 		self.data = d; #this is the dictionary that needs to be sent to server by get. 
@@ -16,4 +17,4 @@ class get(threading.Thread):
 	def run(self):
 		url = self.server;
 		r = requests.get(url, params=self.data)
-        logging.info('Get response object')
+        #logging.info('Get response object')

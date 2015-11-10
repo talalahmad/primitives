@@ -1,29 +1,43 @@
 import sqlite3
+from sqlite3 import OperationalError
 from os.path import expanduser
 import time
+import syslog
 
 class storage:
 	def __init__(self):
 		self.db_location = expanduser("~")+"/gateway.db";
 		#self.name = name;
 		#self.hash = hash.Hash(self.get_gateways);
-		server_db = sqlite3.connect(self.db_location);
-		cursor = server_db.cursor();
-		cursor.execute("CREATE TABLE IF NOT EXISTS ZONE_USERS (TSTAMP TIMESTAMP, IMSI VARCHAR(16), NAME VARCHAR(16), BTS VARCHAR, RESOLVER VARCHAR);");
-		cursor.execute("CREATE TABLE IF NOT EXISTS RESOLVED (TSTAMP TIMESTAMP, IMSI VARCHAR(16), NAME VARCHAR(16), BTS VARCHAR, GATEWAY VARCHAR);");
-		server_db.commit();
-		server_db.close();
+		try:
+			server_db = sqlite3.connect(self.db_location);
+			cursor = server_db.cursor();
+			cursor.execute("CREATE TABLE IF NOT EXISTS ZONE_USERS (TSTAMP TIMESTAMP, IMSI VARCHAR(16), NAME VARCHAR(16), BTS VARCHAR, RESOLVER VARCHAR);");
+			cursor.execute("CREATE TABLE IF NOT EXISTS RESOLVED (TSTAMP TIMESTAMP, IMSI VARCHAR(16), NAME VARCHAR(16), BTS VARCHAR, GATEWAY VARCHAR);");
+			server_db.commit();
+			server_db.close();
+		except OperationalError:
+		 	syslog.syslog("BALU: operationalError: %s" %(time.time()));
+		 	print "BALU: operationalError";
+
+
 
 	def store(self,from_number,from_name,node_name,t): #from_number is the imsi because it is the phone identity
 		if t == "NEW":
 			if self.already_exists(from_number) is False:
-				tstamp = time.time()
-				server_db = sqlite3.connect(self.db_location);
-				cursor = server_db.cursor();
+				try:
+					tstamp = time.time()
+					server_db = sqlite3.connect(self.db_location);
+					cursor = server_db.cursor();
 				#from_name should ideally come from nexmo... but it will be costly so i am not doing anything here
-				cursor.execute("insert into zone_users values(?,?,?,?,?)",(tstamp,from_number,from_name,node_name,"none",));
-				server_db.commit();
-		 		server_db.close();
+					cursor.execute("insert into zone_users values(?,?,?,?,?)",(tstamp,from_number,from_name,node_name,"none",));
+					server_db.commit();
+			 		server_db.close();
+			 	except OperationalError:
+					syslog.syslog("BALU: operationalError: %s" %(time.time()));
+					print "BALU: operationalError"
+					return False;
+
 		 		return True;
 			else:
 				return False;
@@ -73,10 +87,16 @@ class storage:
 		# 	return "number of parameters is not 3 or 5, 'imsi' and 'name' and 'mode' required"
 
 	def already_exists(self, imsi):
-		server_db = sqlite3.connect(self.db_location);
-		cursor = server_db.cursor();
-		cursor.execute("Select * from ZONE_USERS where imsi=?", (imsi,));
-		db_output = cursor.fetchall()
+		db_output = ''
+		try:
+			server_db = sqlite3.connect(self.db_location);
+			cursor = server_db.cursor();
+			cursor.execute("Select * from ZONE_USERS where imsi=?", (imsi,));
+			db_output = cursor.fetchall()
+		except OperationalError:
+			syslog.syslog("BALU: operationalError: %s" %(time.time()));
+			print "BALU: operationalError"
+
 		if len(db_output) == 0:
 			return False;
 		else:
