@@ -25,7 +25,7 @@ def make_new_users(user_number, myself, how_many):
 		
 		data_to_be_sent = {}
 		data_to_be_sent['i'] = user_id;
-		data_to_be_sent['t'] = "NEW";
+		data_to_be_sent['t'] = "NEW HASH";
 		data_to_be_sent['d'] = "something"+","+str(user_id)+","+str(user_id)+","+myself;
 
 		syslog.syslog("AALU: uid=%s and time=%s" %(user_id,str(time.time())))
@@ -54,7 +54,7 @@ syslog.syslog("AALU: starter starting here here here")
 for i in range(0,5):
 	bts_process.append('')
 for i in range(0,5):
-	bts_process[i] = bts_client(user_number+(i*1000000000), myself+str(port+i)+myself2, 100);
+	bts_process[i] = bts_client(user_number+(i*1000000000), myself+str(port+i)+myself2, 10);
 	bts_process[i].start();
 for i in range(0,5):
 	bts_process[i].join();

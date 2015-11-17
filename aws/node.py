@@ -17,6 +17,7 @@ import uploader
 import syslog
 import time
 import storage
+import myhash
 
 urls = (
 	"/", "view_data",
@@ -132,6 +133,9 @@ class server:
 		from_name = d[2]
 		node_name = d[3]
 		d = d[0]
+
+		
+
 		if t == "MKP":
 		#	syslog.syslog("BALU: inside t == MKP")
 			if 'sell' in d or 'Sell' in d:
@@ -238,6 +242,31 @@ class server:
 				thread = get.get(node_name,'',data_to_be_sent); #node_name coming in each request is the ip of the handler 
 				thread.start();
 				#have to send back a response saying that the user already exists 
+		elif(t == "NEW HASH"):
+			#hash_ring = myhash.Hash(["8090","8091","8092","8093","8094","9090","9091","9092","9093","9094"])
+			#temp = hash_ring.get_md5(identity)
+			x = int(identity)%5
+			if x == 1:
+				node = 8090
+			elif x ==2:
+				node = 8091
+			elif x ==3:
+				node = 8092
+			elif x ==4:
+				node = 8093
+			else:
+				node = 8094
+			#node = hash_ring.get_node(temp)
+			print node;
+			data_to_be_sent = {}
+			data_to_be_sent['i'] = identity;
+			data_to_be_sent['t'] = "NEW";
+			data_to_be_sent['d'] = d;
+
+		#	syslog.syslog("BALU: uid=%s and time=%s" %(identity,str(time.time())))
+			thread[i] = get.get('http://127.0.0.1:'+node+'/server','',data_to_be_sent);
+			syslog.syslog("BALU: Node selected is %s" %node);
+
 
 class node:
 	def __init__(self):

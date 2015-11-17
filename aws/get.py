@@ -1,6 +1,7 @@
 import requests
 import logging
 import multiprocessing
+import syslog
 
 
 class get(multiprocessing.Process):
@@ -15,6 +16,10 @@ class get(multiprocessing.Process):
   #                           filename='/var/log/marketplace.log',level=loglvl)
 
 	def run(self):
-		url = self.server;
-		r = requests.get(url, params=self.data)
+		try:
+			url = self.server;
+			r = requests.get(url, params=self.data)
+		except requests.ConnectionError as e:
+			print e
+			syslog.syslog("AALU: %s" %str(e))
         #logging.info('Get response object')
