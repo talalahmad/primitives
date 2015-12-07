@@ -3,6 +3,9 @@ from sqlite3 import OperationalError
 from os.path import expanduser
 import time
 import syslog
+import urllib
+import urllib2
+
 
 class storage:
 	def __init__(self, name=""):
@@ -26,6 +29,11 @@ class storage:
 		if t == "NEW":
 			if self.already_exists(from_number) is False:
 				try:
+					ret = urllib2.urlopen("https://rest.nexmo.com/ni/json",urllib.urlencode([("api_key","474cd201"),("api_secret","eb3b600f"),("number","12079565654")]));
+					#print ret.geturl();
+					#print ret.info();
+					#print ret.getcode();
+
 					tstamp = time.time()
 					server_db = sqlite3.connect(self.db_location);
 					cursor = server_db.cursor();

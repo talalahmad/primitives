@@ -3,7 +3,8 @@ import syslog
 import time
 import threading 
 import multiprocessing
-import storage
+from aws import storage
+import urllib2
 ## configuration settings
 ### fill this as per experiment  
 user_number = 1000000000;
@@ -58,7 +59,7 @@ class bts_client2:
 
 		for i in range(0,self.how_many):
 			from_number = self.start_number+i;
-			print from_number;
+		#	print from_number;
 			from_name = from_number;
 			node_name = self.myself;
 			t="NEW"
@@ -81,7 +82,7 @@ class bts_client3:
 	def rip(self):
 		disk_storage = storage.storage()
 
-		for i in range(0,how_many):
+		for i in range(0,self.how_many):
 			from_number = self.start_number+i;
 			print from_number;
 			from_name = from_number;
@@ -133,8 +134,11 @@ syslog.syslog("AALU: starter starting here here here")
 # for i in range(0,5):
 # 	bts_process[i].join();
 
-# a = bts_client2(100000000000,myself,500)
-# a.rip();
-
-a = bts_client3(100000000000,myself,500)
+print time.time()
+a = bts_client2(100000000000,myself,500)
 a.rip();
+print time.time()
+
+
+#a = bts_client3(100000000000,myself,1)
+#a.rip();
