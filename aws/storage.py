@@ -5,8 +5,8 @@ import time
 import syslog
 
 class storage:
-	def __init__(self):
-		self.db_location = expanduser("~")+"/gateway.db";
+	def __init__(self, name=""):
+		self.db_location = expanduser("~")+"/gateway"+name+".db";
 		#self.name = name;
 		#self.hash = hash.Hash(self.get_gateways);
 		try:

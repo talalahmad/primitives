@@ -261,10 +261,11 @@ class server:
 			data_to_be_sent = {}
 			data_to_be_sent['i'] = identity;
 			data_to_be_sent['t'] = "NEW";
-			data_to_be_sent['d'] = d;
+			data_to_be_sent['d'] = user_data['d'];
 
 		#	syslog.syslog("BALU: uid=%s and time=%s" %(identity,str(time.time())))
-			thread[i] = get.get('http://127.0.0.1:'+node+'/server','',data_to_be_sent);
+			thread = get.get('http://127.0.0.1:'+str(node)+'/server','',data_to_be_sent);
+			thread.start();
 			syslog.syslog("BALU: Node selected is %s" %node);
 
 
