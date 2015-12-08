@@ -12,10 +12,10 @@ def connect_after(ip, key, how_many):
 	for command in commands:
 		if command[0] == 's' and command[1] =='u':
 			print "Executing {}".format( command )
-			stdin , stdout, stderr = c.run_pty(command)
-			print stdout.read()
-			print( "Errors")
-			print stderr.read()
+			chan = c.get_transport().open_session()
+			chan.get_pty()
+			chan.exec_command(command)
+			print(chan.recv(1024))
 		else:
 			print "Executing {}".format( command )
 			stdin , stdout, stderr = c.exec_command(command)
