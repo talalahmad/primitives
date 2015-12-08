@@ -15,7 +15,7 @@ myself = "http://127.0.0.1:"
 myself2 = "/little_server"
 how_many = 1000;
 
-nodes=["172.31.47.90:8080","172.31.8.192:8080","172.31.1.241:8080","172.31.17.5:8080","172.31.4.150:8080","172.31.6.20:8080","172.31.27.49:8080","172.31.14.204:8080","172.31.0.223:8080","172.31.10.69:8080"]
+nodes=["172.31.47.90","172.31.8.192","172.31.1.241","172.31.17.5","172.31.4.150","172.31.6.20","172.31.27.49","172.31.14.204","172.31.0.223","172.31.10.69"]
 keys=["ireland.pem","virginia.pem","virginia.pem","oregon.pem","california.pem","singapore.pem","tokyo.pem","sydney.pem","saopaulo.pem","frankfurt.pem"]
 
 def make_new_users(user_number, myself, how_many):
@@ -86,12 +86,11 @@ class bts_client3:
 
 	def clean(self):
 		for i in range(0,10):
-			print i
 			data_to_be_sent = {}
 		 	data_to_be_sent['i'] = "a";
 		 	data_to_be_sent['t'] = "CLEAN";
 		 	data_to_be_sent['d'] = 'd';
-		 	thread = get.get(nodes[i]+'/server','',data_to_be_sent);
+		 	thread = get.get('http://'+nodes[i]+':8080/server','',data_to_be_sent);
 		 	thread.start();
 		 	thread.join();
 		 	syslog.syslog("BALU: Just cleaned node:%s" %nodes[i]);
@@ -138,7 +137,7 @@ class bts_client3:
 		 	data_to_be_sent['t'] = "NEW";
 		 	data_to_be_sent['d'] = user_data['d'];
 			syslog.syslog("BALU: uid=%s and time=%s" %(identity,str(time.time())))
-		 	thread[i] = get.get(nodes[i]+'/server','',data_to_be_sent);
+		 	thread[i] = get.get('http://'+nodes[i]+':8080/server','',data_to_be_sent);
 		 	thread[i].start();
 		 	syslog.syslog("BALU: Node selected is %s" %node);
 		for i in range(0,self.how_many):
