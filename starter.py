@@ -90,7 +90,7 @@ class bts_client3:
 			data_to_be_sent = {}
 		 	data_to_be_sent['i'] = "a";
 		 	data_to_be_sent['t'] = "CLEAN";
-		 	data_to_be_sent['d'] = 'd';
+		 	data_to_be_sent['d'] = 'd,d,d,d,d';
 		 	thread = get.get('http://'+nodes[i]+':8080/server','',data_to_be_sent);
 		 	thread.start();
 		 	thread.join();
