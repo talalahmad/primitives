@@ -224,24 +224,40 @@ class server:
 						# for loop from last to first of size 5 to compose message 
 		# New user for naming and addressing testing
 		elif(t == "NEW"):
+			# disk_storage = storage.storage()
+			# output = disk_storage.store(from_number,from_name,node_name,t)
+			# if output is True:
+			# 	#have to send back a response saying that i have saved something. 
+			# 	data_to_be_sent = {};
+			# 	data_to_be_sent['i'] = identity;
+			# 	data_to_be_sent['t'] = t;
+			# 	data_to_be_sent['d'] = "success"
+			# 	#thread = get.get(node_name,'',data_to_be_sent); #node_name coming in each request is the ip of the handler 
+			# 	#thread.start();
+			# elif output is False:
+			# 	data_to_be_sent = {};
+			# 	data_to_be_sent['i'] = identity;
+			# 	data_to_be_sent['t'] = t;
+			# 	data_to_be_sent['d'] = "already"
+			# 	#thread = get.get(node_name,'',data_to_be_sent); #node_name coming in each request is the ip of the handler 
+			# 	#thread.start();
+			# 	#have to send back a response saying that the user already exists
 			disk_storage = storage.storage()
+		#disk_storage.clean();
+
+#		for i in range(0,self.how_many):
+			from_number = from_number
+		#	print from_number;
+			from_name = from_number;
+			node_name = "anything";
+			t="NEW"
 			output = disk_storage.store(from_number,from_name,node_name,t)
 			if output is True:
 				#have to send back a response saying that i have saved something. 
-				data_to_be_sent = {};
-				data_to_be_sent['i'] = identity;
-				data_to_be_sent['t'] = t;
-				data_to_be_sent['d'] = "success"
-				thread = get.get(node_name,'',data_to_be_sent); #node_name coming in each request is the ip of the handler 
-				thread.start();
+				syslog.syslog("BALU: uid=%s and time=%s" %(from_number,str(time.time())))
 			elif output is False:
-				data_to_be_sent = {};
-				data_to_be_sent['i'] = identity;
-				data_to_be_sent['t'] = t;
-				data_to_be_sent['d'] = "already"
-				thread = get.get(node_name,'',data_to_be_sent); #node_name coming in each request is the ip of the handler 
-				thread.start();
-				#have to send back a response saying that the user already exists 
+				syslog.syslog("BALU: uid=%s and time=%s" %(from_number,str(time.time()))) 
+
 		elif(t == "NEW HASH"):
 			#hash_ring = myhash.Hash(["8090","8091","8092","8093","8094","9090","9091","9092","9093","9094"])
 			#temp = hash_ring.get_md5(identity)
