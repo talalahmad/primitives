@@ -1,4 +1,5 @@
 #!/bin/sh
+pkill -f node.py
 python ~/primitives/aws/node.py 8080 & 
 cat /proc/net/dev > ~/bandwidth_before_dht_500
 python ~/primitives/starter.py 500 
