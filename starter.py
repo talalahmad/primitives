@@ -6,6 +6,7 @@ import multiprocessing
 from aws import storage
 import urllib2
 import sys 
+import myssh
 
 ## configuration settings
 ### fill this as per experiment  
@@ -15,6 +16,7 @@ myself2 = "/little_server"
 how_many = 1000;
 
 nodes=[]
+keys=[]
 
 def make_new_users(user_number, myself, how_many):
 	# global user_number;
@@ -98,6 +100,9 @@ class bts_client3:
 		disk_storage = storage.storage()
 		self.clean();
 		thread = []
+		for i in range(0,len(nodes)):
+			myssh.connect_before(nodes[i],keys[i],self.how_many)
+
 		for i in range(0,self.how_many):
 			from_number = self.start_number+i;
 			print from_number;
@@ -139,6 +144,9 @@ class bts_client3:
 		for i in range(0,self.how_many):
 			thread[i].join()
 
+		for i in range(0,len(nodes)):
+			myssh.connect_after(nodes[i],keys[i],self.how_many)
+
 
 
 port = 8080
@@ -152,14 +160,20 @@ syslog.syslog("BALU: starter starting here here here")
 # for i in range(0,5):
 # 	bts_process[i].join();
 
+# number = sys.argv[1]
+# print time.time()
+# syslog.syslog("BALU: Number of users=%s Starting time=%s" %(number,str(time.time())))
+# a = bts_client2(100000000000,myself,int(number))
+# a.rip();
+# syslog.syslog("BALU: Number of users=%s Ending time=%s" %(number,str(time.time())))
+# print time.time()
+
+
+
 number = sys.argv[1]
 print time.time()
 syslog.syslog("BALU: Number of users=%s Starting time=%s" %(number,str(time.time())))
-a = bts_client2(100000000000,myself,int(number))
+a = bts_client3(100000000000,myself,int(number))
 a.rip();
 syslog.syslog("BALU: Number of users=%s Ending time=%s" %(number,str(time.time())))
 print time.time()
-
-
-#a = bts_client3(100000000000,myself,1)
-#a.rip();
