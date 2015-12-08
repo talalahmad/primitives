@@ -23,6 +23,19 @@ class storage:
 		 	syslog.syslog("BALU: operationalError: %s" %(time.time()));
 		 	print "BALU: operationalError";
 
+	def clean(self):
+		#self.name = name;
+		#self.hash = hash.Hash(self.get_gateways);
+		try:
+			server_db = sqlite3.connect(self.db_location);
+			cursor = server_db.cursor();
+			cursor.execute("DELETE FROM ZONE_USERS WHERE 1;");
+			cursor.execute("DELETE FROM RESOLVED WHERE 1;");
+			server_db.commit();
+			server_db.close();
+		except OperationalError:
+		 	syslog.syslog("BALU: operationalError: %s" %(time.time()));
+		 	print "BALU: operationalError";
 
 
 	def store(self,from_number,from_name,node_name,t): #from_number is the imsi because it is the phone identity

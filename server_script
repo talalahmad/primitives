@@ -1,6 +1,3 @@
 #!/bin/sh
-python ~/Dropbox/primitives/node.py 8080 &
-python ~/Dropbox/primitives/node.py 8081 &
-python ~/Dropbox/primitives/node.py 8082 &
-python ~/Dropbox/primitives/node.py 8083 &
-python ~/Dropbox/primitives/node.py 8084 &
+python ~/primitives/starter.py 500 &
+grep BALU /var/log/messages > ~/log_cl_500

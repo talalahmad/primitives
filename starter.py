@@ -5,12 +5,16 @@ import threading
 import multiprocessing
 from aws import storage
 import urllib2
+import sys 
+
 ## configuration settings
 ### fill this as per experiment  
 user_number = 1000000000;
 myself = "http://127.0.0.1:"
 myself2 = "/little_server"
 how_many = 1000;
+
+nodes=[]
 
 def make_new_users(user_number, myself, how_many):
 	# global user_number;
@@ -56,6 +60,7 @@ class bts_client2:
 
 	def rip(self):
 		disk_storage = storage.storage()
+		disk_storage.clean();
 
 		for i in range(0,self.how_many):
 			from_number = self.start_number+i;
@@ -66,10 +71,8 @@ class bts_client2:
 			output = disk_storage.store(from_number,from_name,node_name,t)
 			if output is True:
 				#have to send back a response saying that i have saved something. 
-				syslog.syslog("BALU: True returned")
 				syslog.syslog("BALU: uid=%s and time=%s" %(from_number,str(time.time())))
 			elif output is False:
-				syslog.syslog("BALU: False returned")
 				syslog.syslog("BALU: uid=%s and time=%s" %(from_number,str(time.time())))
 
 
@@ -81,6 +84,7 @@ class bts_client3:
 
 	def rip(self):
 		disk_storage = storage.storage()
+		disk_storage.clean();
 
 		for i in range(0,self.how_many):
 			from_number = self.start_number+i;
@@ -91,41 +95,41 @@ class bts_client3:
 
 			x = int(from_number)%10
 			if x == 1:
-				node = 8090
+				node = nodes[1]
 			elif x ==2:
-				node = 8091
+				node = nodes[2]
 			elif x ==3:
-				node = 8092
+				node = nodes[3]
 			elif x ==4:
-				node = 8093
+				node = nodes[4]
 			elif x ==5:
-				node = 8094
+				node = nodes[5]
 			elif x ==6:
-				node = 8095
+				node = nodes[6]
 			elif x ==7:
-				node = 8096
+				node = nodes[7]
 			elif x ==8:
-				node = 8097
+				node = nodes[8]
 			elif x ==9:
-				node = 8098
+				node = nodes[9]
 			else:
-				node = 8099
-			
+				node = nodes[0]
 			print node;
-		# 	data_to_be_sent = {}
-		# 	data_to_be_sent['i'] = identity;
-		# 	data_to_be_sent['t'] = "NEW";
-		# 	data_to_be_sent['d'] = user_data['d'];
-		# #	syslog.syslog("BALU: uid=%s and time=%s" %(identity,str(time.time())))
-		# 	thread = get.get('http://127.0.0.1:'+str(node)+'/server','',data_to_be_sent);
-		# 	thread.start();
-		# 	syslog.syslog("BALU: Node selected is %s" %node);
+
+		 	data_to_be_sent = {}
+		 	data_to_be_sent['i'] = identity;
+		 	data_to_be_sent['t'] = "NEW";
+		 	data_to_be_sent['d'] = user_data['d'];
+			syslog.syslog("BALU: uid=%s and time=%s" %(identity,str(time.time())))
+		 	thread = get.get('http://127.0.0.1:'+str(node)+'/server','',data_to_be_sent);
+		 	thread.start();
+		 	syslog.syslog("BALU: Node selected is %s" %node);
 
 
 
 port = 8080
 bts_process = []
-syslog.syslog("AALU: starter starting here here here")
+syslog.syslog("BALU: starter starting here here here")
 # for i in range(0,5):
 # 	bts_process.append('')
 # for i in range(0,5):
@@ -134,9 +138,12 @@ syslog.syslog("AALU: starter starting here here here")
 # for i in range(0,5):
 # 	bts_process[i].join();
 
+number = sys.argv[1]
 print time.time()
-a = bts_client2(100000000000,myself,500)
+syslog.syslog("BALU: Number of users=%s Starting time=%s" %(number,str(time.time())))
+a = bts_client2(100000000000,myself,int(number))
 a.rip();
+syslog.syslog("BALU: Number of users=%s Ending time=%s" %(number,str(time.time())))
 print time.time()
 
 
