@@ -26,10 +26,15 @@ def connect_before(ip, key, how_many):
 	print "connected to"+key
 	commands = ["pkill -f node.py","git -C ~/primitives pull","bash ~/primitives/server_script3","cat /proc/net/dev > ~/bandwidth_before_dht_"+str(how_many)]
 	for command in commands:
-		print "Executing {}".format( command )
-		stdin , stdout, stderr = c.exec_command(command)
-		print stdout.read()
-		print stderr.read()
+		if command == "bash ~/primitives/server_script3":
+			transport = c.get_transport()
+			channel = transport.open_session()
+			channel.exec_command("bash ~/primitives/server_script3")
+		else:
+			print "Executing {}".format( command )
+			stdin , stdout, stderr = c.exec_command(command)
+			print stdout.read()
+			print stderr.read()
 	c.close()
 
 # def download_files(ip, key, filename):
