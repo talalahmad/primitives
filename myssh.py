@@ -21,10 +21,10 @@ def connect_before(ip, key, how_many):
 	k = paramiko.RSAKey.from_private_key_file("/home/ec2-user/"+key)
 	c = paramiko.SSHClient()
 	c.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-	print "connecting"
+	print "connecting to"+key
 	c.connect( hostname = ip, username = "ec2-user", pkey = k )
-	print "connected"
-	commands = ["pkill -f node.py","git -C ~/primitives pull","python ~/primitives/aws/node.py 8080","cat /proc/net/dev > ~/bandwidth_before_dht_"+str(how_many)]
+	print "connected to"+key
+	commands = ["pkill -f node.py","git -C ~/primitives pull","python ~/primitives/aws/node.py 8080 &","cat /proc/net/dev > ~/bandwidth_before_dht_"+str(how_many)]
 	for command in commands:
 		print "Executing {}".format( command )
 		stdin , stdout, stderr = c.exec_command(command)
