@@ -97,11 +97,12 @@ class bts_client3:
 		 	syslog.syslog("BALU: Just cleaned node:%s" %nodes[i]);
 
 	def rip(self):
+		for i in range(0,len(nodes)-1):
+			myssh.connect_before(nodes[i],keys[i],self.how_many)
+
 		disk_storage = storage.storage()
 		self.clean();
 		thread = []
-		for i in range(0,len(nodes)-1):
-			myssh.connect_before(nodes[i],keys[i],self.how_many)
 
 		for i in range(0,self.how_many):
 			from_number = self.start_number+i;
