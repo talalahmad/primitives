@@ -267,6 +267,9 @@ class server:
 			thread = get.get('http://127.0.0.1:'+str(node)+'/server','',data_to_be_sent);
 			thread.start();
 			syslog.syslog("BALU: Node selected is %s" %node);
+		elif(t == "CLEAN"):
+			disk_storage = storage.storage()
+			disk_storage.clean();
 
 
 class node:

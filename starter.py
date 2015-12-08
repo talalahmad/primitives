@@ -82,10 +82,22 @@ class bts_client3:
 		self.myself=myself
 		self.start_number = user_number
 
+	def clean(self):
+		for i in range(0,10):
+			nodes[i]
+			data_to_be_sent = {}
+		 	data_to_be_sent['i'] = "a";
+		 	data_to_be_sent['t'] = "CLEAN";
+		 	data_to_be_sent['d'] = 'd';
+		 	thread = get.get(nodes[i]+'/server','',data_to_be_sent);
+		 	thread.start();
+		 	thread.join();
+		 	syslog.syslog("BALU: Just cleaned node:%s" %nodes[i]);
+
 	def rip(self):
 		disk_storage = storage.storage()
-		disk_storage.clean();
-
+		self.clean();
+		thread = []
 		for i in range(0,self.how_many):
 			from_number = self.start_number+i;
 			print from_number;
@@ -121,9 +133,11 @@ class bts_client3:
 		 	data_to_be_sent['t'] = "NEW";
 		 	data_to_be_sent['d'] = user_data['d'];
 			syslog.syslog("BALU: uid=%s and time=%s" %(identity,str(time.time())))
-		 	thread = get.get('http://127.0.0.1:'+str(node)+'/server','',data_to_be_sent);
-		 	thread.start();
+		 	thread[i] = get.get(nodes[i]+'/server','',data_to_be_sent);
+		 	thread[i].start();
 		 	syslog.syslog("BALU: Node selected is %s" %node);
+		for i in range(0,self.how_many):
+			thread[i].join()
 
 
 
