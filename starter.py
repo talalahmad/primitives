@@ -135,9 +135,9 @@ class bts_client3:
 			print node;
 
 		 	data_to_be_sent = {}
-		 	data_to_be_sent['i'] = identity;
+		 	data_to_be_sent['i'] = from_name;
 		 	data_to_be_sent['t'] = "NEW";
-		 	data_to_be_sent['d'] = user_data['d'];
+		 	data_to_be_sent['d'] = from_number;
 			syslog.syslog("BALU: uid=%s and time=%s" %(identity,str(time.time())))
 		 	thread[i] = get.get('http://'+nodes[i]+':8080/server','',data_to_be_sent);
 		 	thread[i].start();
