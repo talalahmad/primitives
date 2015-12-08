@@ -145,7 +145,7 @@ class bts_client3:
 		 		thread[i].start();
 		 	except IndexError:
 		 		print "there was an indexError"
-""		 	syslog.syslog("BALU: Node selected is %s" %node);
+		 	syslog.syslog("BALU: Node selected is %s" %node);
 		for i in range(0,self.how_many):
 			thread[i].join()
 
