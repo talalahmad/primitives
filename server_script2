@@ -1,26 +1,21 @@
 #!/bin/sh
 python ~/primitives/aws/node.py 8080 & 
-
 cat /proc/net/dev > ~/bandwidth_before_dht_500
 python ~/primitives/starter.py 500 
 cat /proc/net/dev > ~/bandwidth_after_dht_500
 sudo grep BALU /var/log/messages > ~/log_dht_500
-
 cat /proc/net/dev > ~/bandwidth_before_dht_1000
 python ~/primitives/starter.py 1000
 cat /proc/net/dev > ~/bandwidth_after_dht_1000
 sudo grep BALU /var/log/messages > ~/log_dht_1000
-
 cat /proc/net/dev > ~/bandwidth_before_dht_1500
 python ~/primitives/starter.py 1500
 cat /proc/net/dev > ~/bandwidth_after_dht_1500
 sudo grep BALU /var/log/messages > ~/log_dht_1500
-
 cat /proc/net/dev > ~/bandwidth_before_dht_2000
 python ~/primitives/starter.py 2000
 cat /proc/net/dev > ~/bandwidth_after_dht_2000
 sudo grep BALU /var/log/messages > ~/log_dht_2000
-
 cat /proc/net/dev > ~/bandwidth_before_dht_2500
 python ~/primitives/starter.py 2500
 cat /proc/net/dev > ~/bandwidth_before_dht_2500
