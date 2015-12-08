@@ -1,0 +1,2 @@
+#!/bin/sh
+python ~/primitives/aws/node.py 8080 &
