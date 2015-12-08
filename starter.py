@@ -100,7 +100,7 @@ class bts_client3:
 		disk_storage = storage.storage()
 		self.clean();
 		thread = []
-		for i in range(0,len(nodes)):
+		for i in range(0,len(nodes)-1):
 			myssh.connect_before(nodes[i],keys[i],self.how_many)
 
 		for i in range(0,self.how_many):
@@ -144,7 +144,7 @@ class bts_client3:
 		for i in range(0,self.how_many):
 			thread[i].join()
 
-		for i in range(0,len(nodes)):
+		for i in range(0,len(nodes)-1):
 			myssh.connect_after(nodes[i],keys[i],self.how_many)
 
 
