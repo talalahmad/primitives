@@ -91,7 +91,7 @@ class bts_client3:
 		 	data_to_be_sent['i'] = "a";
 		 	data_to_be_sent['t'] = "CLEAN";
 		 	data_to_be_sent['d'] = 'd';
-		 	thread = get.get('http://'+nodes[i]+':80/server','',data_to_be_sent);
+		 	thread = get.get('http://'+nodes[i]+':8080/server','',data_to_be_sent);
 		 	thread.start();
 		 	thread.join();
 		 	syslog.syslog("BALU: Just cleaned node:%s" %nodes[i]);
@@ -138,7 +138,7 @@ class bts_client3:
 		 	data_to_be_sent['t'] = "NEW";
 		 	data_to_be_sent['d'] = user_data['d'];
 			syslog.syslog("BALU: uid=%s and time=%s" %(identity,str(time.time())))
-		 	thread[i] = get.get('http://'+nodes[i]+':80/server','',data_to_be_sent);
+		 	thread[i] = get.get('http://'+nodes[i]+':8080/server','',data_to_be_sent);
 		 	thread[i].start();
 		 	syslog.syslog("BALU: Node selected is %s" %node);
 		for i in range(0,self.how_many):
