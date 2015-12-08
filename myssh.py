@@ -24,12 +24,11 @@ def connect_before(ip, key, how_many):
 	print "connecting"
 	c.connect( hostname = ip, username = "ec2-user", pkey = k )
 	print "connected"
-	commands = ["cd ~/primitives && git pull","python ~/primitives/aws/node.py 8080 &" ,"cat /proc/net/dev > ~/bandwidth_before_dht_"+str(how_many)]
+	commands = ["ps -ef | grep "node.py" | awk '{print $2}' | xargs sudo kill","cd ~/primitives && git pull","python ~/primitives/aws/node.py 8080 &" ,"cat /proc/net/dev > ~/bandwidth_before_dht_"+str(how_many)]
 	for command in commands:
 		print "Executing {}".format( command )
 		stdin , stdout, stderr = c.exec_command(command)
 		print stdout.read()
-		print( "Errors")
 		print stderr.read()
 	c.close()
 
