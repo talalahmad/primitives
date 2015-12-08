@@ -24,4 +24,4 @@ sudo grep BALU /var/log/messages > ~/log_dht_2000
 cat /proc/net/dev > ~/bandwidth_before_dht_2500
 python ~/primitives/starter.py 2500
 cat /proc/net/dev > ~/bandwidth_before_dht_2500
-sudo grep BALU /var/log/messages > ~/log_dht_2000
+sudo grep BALU /var/log/messages > ~/log_dht_2500
