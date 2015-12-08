@@ -10,11 +10,19 @@ def connect_after(ip, key, how_many):
 	print "connected"
 	commands = ["cat /proc/net/dev > ~/bandwidth_after_dht_"+str(how_many) ,"sudo grep BALU /var/log/messages > ~/log_dht_"+str(how_many)]
 	for command in commands:
-		print "Executing {}".format( command )
-		stdin , stdout, stderr = c.exec_command(command)
-		print stdout.read()
-		print( "Errors")
-		print stderr.read()
+		if command[0] == 's' and command[1] =='u':
+			print "Executing {}".format( command )
+			chan = c.invoke_shell()
+			stdin , stdout, stderr = chan.exec_command(command)
+			print stdout.read()
+			print( "Errors")
+			print stderr.read()
+		else:
+			print "Executing {}".format( command )
+			stdin , stdout, stderr = c.exec_command(command)
+			print stdout.read()
+			print( "Errors")
+			print stderr.read()
 	c.close()
 
 def connect_before(ip, key, how_many):
