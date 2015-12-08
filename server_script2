@@ -1,5 +1,5 @@
 #!/bin/sh
-python ~/primitives/aws/node.py 8080 & 
+python ~/primitives/aws/node.py 80 & 
 
 cat /proc/net/dev > ~/bandwidth_before_dht_500
 python ~/primitives/starter.py 500 
