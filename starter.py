@@ -141,8 +141,8 @@ class bts_client3:
 		 	data_to_be_sent['d'] = from_number+","+from_number+","+from_number+","+from_number;
 			syslog.syslog("BALU: uid=%s and time=%s" %(from_name,str(time.time())))
 			try:
-		 		thread[i] = get.get('http://'+node+':8080/server','',data_to_be_sent);
-		 		thread[i].start();
+		 		thread.append(get.get('http://'+node+':8080/server','',data_to_be_sent));
+		 		thread[-1].start();
 		 	except IndexError:
 		 		print "there was an indexError"
 		 	syslog.syslog("BALU: Node selected is %s" %node);
