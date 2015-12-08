@@ -254,9 +254,9 @@ class server:
 			output = disk_storage.store(from_number,from_name,node_name,t)
 			if output is True:
 				#have to send back a response saying that i have saved something. 
-				syslog.syslog("BALU: uid=%s and time=%s" %(from_number,str(time.time())))
+				syslog.syslog("BALU: uid=%s and timesaved=%s" %(from_number,str(time.time())))
 			elif output is False:
-				syslog.syslog("BALU: uid=%s and time=%s" %(from_number,str(time.time()))) 
+				syslog.syslog("BALU: uid=%s and timesaved=%s" %(from_number,str(time.time()))) 
 
 		elif(t == "NEW HASH"):
 			#hash_ring = myhash.Hash(["8090","8091","8092","8093","8094","9090","9091","9092","9093","9094"])
