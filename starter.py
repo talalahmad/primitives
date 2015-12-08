@@ -15,8 +15,8 @@ myself = "http://127.0.0.1:"
 myself2 = "/little_server"
 how_many = 1000;
 
-nodes=[]
-keys=[]
+nodes=["172.31.47.90:8080","172.31.8.192:8080","172.31.1.241:8080","172.31.17.5:8080","172.31.4.150:8080","172.31.6.20:8080","172.31.27.49:8080","172.31.14.204:8080","172.31.0.223:8080","172.31.10.69:8080"]
+keys=["ireland.pem","virginia.pem","virginia.pem","oregon.pem","california.pem","singapore.pem","tokyo.pem","sydney.pem","saopaulo.pem","frankfurt.pem"]
 
 def make_new_users(user_number, myself, how_many):
 	# global user_number;
@@ -86,7 +86,7 @@ class bts_client3:
 
 	def clean(self):
 		for i in range(0,10):
-			nodes[i]
+			print i
 			data_to_be_sent = {}
 		 	data_to_be_sent['i'] = "a";
 		 	data_to_be_sent['t'] = "CLEAN";

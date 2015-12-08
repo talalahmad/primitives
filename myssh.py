@@ -1,7 +1,7 @@
 import paramiko
 
 def connect_after(ip, key, how_many):
-	k = paramiko.RSAKey.from_private_key_file(key)
+	k = paramiko.RSAKey.from_private_key_file("/home/ec2-user/"+key)
 	c = paramiko.SSHClient()
 	c.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 	print "connecting"
@@ -17,7 +17,7 @@ def connect_after(ip, key, how_many):
 	c.close()
 
 def connect_before(ip, key, how_many):
-	k = paramiko.RSAKey.from_private_key_file(key)
+	k = paramiko.RSAKey.from_private_key_file("/home/ec2-user/"+key)
 	c = paramiko.SSHClient()
 	c.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 	print "connecting"
