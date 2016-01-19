@@ -1,23 +1,23 @@
 #!/bin/sh
 pkill -f node.py
 python ~/primitives/aws/node.py 8080 & 
-cat /proc/net/dev > ~/bandwidth_before_dht_500
+cat /proc/net/dev > ~/bandwidth_before_cl_again_500
 python ~/primitives/starter2.py 450 
-cat /proc/net/dev > ~/bandwidth_after_dht_500
-sudo grep BALU /var/log/messages > ~/log_dht_500
-cat /proc/net/dev > ~/bandwidth_before_dht_1000
+cat /proc/net/dev > ~/bandwidth_after_cl_again_500
+sudo grep BALU /var/log/messages > ~/log_cl_again_500
+cat /proc/net/dev > ~/bandwidth_before_cl_again_1000
 python ~/primitives/starter2.py 900
-cat /proc/net/dev > ~/bandwidth_after_dht_1000
-sudo grep BALU /var/log/messages > ~/log_dht_1000
-cat /proc/net/dev > ~/bandwidth_before_dht_1500
+cat /proc/net/dev > ~/bandwidth_after_cl_again_1000
+sudo grep BALU /var/log/messages > ~/log_cl_again_1000
+cat /proc/net/dev > ~/bandwidth_before_cl_again_1500
 python ~/primitives/starter2.py 1350
-cat /proc/net/dev > ~/bandwidth_after_dht_1500
-sudo grep BALU /var/log/messages > ~/log_dht_1500
-cat /proc/net/dev > ~/bandwidth_before_dht_2000
+cat /proc/net/dev > ~/bandwidth_after_cl_again_1500
+sudo grep BALU /var/log/messages > ~/log_cl_again_1500
+cat /proc/net/dev > ~/bandwidth_before_cl_again_2000
 python ~/primitives/starter2.py 1800
-cat /proc/net/dev > ~/bandwidth_after_dht_2000
-sudo grep BALU /var/log/messages > ~/log_dht_2000
-cat /proc/net/dev > ~/bandwidth_before_dht_2500
+cat /proc/net/dev > ~/bandwidth_after_cl_again_2000
+sudo grep BALU /var/log/messages > ~/log_cl_again_2000
+cat /proc/net/dev > ~/bandwidth_before_cl_again_2500
 python ~/primitives/starter2.py 2250
-cat /proc/net/dev > ~/bandwidth_before_dht_2500
-sudo grep BALU /var/log/messages > ~/log_dht_2500
+cat /proc/net/dev > ~/bandwidth_before_cl_again_2500
+sudo grep BALU /var/log/messages > ~/log_cl_again_2500
