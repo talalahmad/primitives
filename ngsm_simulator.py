@@ -35,14 +35,72 @@
 # channel = 59, reports per minute = 0.417339 
 # channel = 89, reports per minute = 0.385939 
 # channel = 95, reports per minute = 0.727343
+import math
+import matplotlib.pyplot as plt
 
-maximum_packets_needed = 115 
-our_rate = 1.137980
-ngsm_rate = 0.090931 
+def time_taken_by_ngsm (channels,users):
+	maximum_packets_needed = 115 
+	ngsm_rate = 0.385939 
+	iters = math.ceil(channels/5.0)
+	minutes = iters * (maximum_packets_needed/ngsm_rate)
+	return minutes
+
+def time_taken_by_us(channels,users,volunteers_users_ratio):
+	maximum_packets_needed = 115 
+	our_rate = 1.137980	
+	ngsm_rate = 0.385939 
+	volunteers = volunteers_users_ratio*float(users)
+	users = users-volunteers
+	print volunteers
+	print users
+	combined_rate = ((our_rate*volunteers)+(ngsm_rate*users))/float(volunteers+users)
+	iters = math.ceil(channels/5.0)
+	minutes = iters * (maximum_packets_needed/combined_rate)
+	return minutes
+
+
+ 
 our_users = 2
 ngsm_users = 2 
 
-time_taken_by_us = maximum_packets_needed/our_rate
-time_taken_by_ngsm = maximum_packets_needed/ngsm_rate
+#time_taken_by_us = maximum_packets_needed/our_rate
+#time_taken_by_ngsm = maximum_packets_needed/ngsm_rate
 
-print "time taken by us:%f and time taken by ngsm:%f" %(time_taken_by_us,time_taken_by_ngsm)
+#print "time taken by us:%f and time taken by ngsm:%f" %(time_taken_by_us(1,0,2),time_taken_by_ngsm(1,2))
+
+x1,y1,y2 = [],[],[]
+for i in range(1,11):
+	users = i*5
+	volunteers = i
+	#x1.append(str(i*5)+','+str(i))
+	x1.append(i*5)
+	channels = 5*i
+
+	y1.append(time_taken_by_us(channels,users,0.2))
+	y2.append(time_taken_by_ngsm(channels,users))
+plt.figure()
+plt.plot(x1,y1,'ro-',label='Our Solution')
+plt.plot(x1,y2,'bo-',label='NGSM')
+plt.legend(loc=0)
+plt.xlabel("Number of Users and Channels(Volunteer to user ratio = 0.2)")
+plt.ylabel("Minutes to Identify Channels")
+plt.savefig("ngsm_simulation_0point2")
+
+x1,y1,y2 = [],[],[]
+for i in range(1,11):
+	users = i*5
+	volunteers = i
+	#x1.append(str(i*5)+','+str(i))
+	x1.append(i*5)
+	channels = 5*i
+
+	y1.append(time_taken_by_us(channels,users,0.1))
+	y2.append(time_taken_by_ngsm(channels,users))
+plt.figure()
+plt.plot(x1,y1,'ro-',label='Our Solution')
+plt.plot(x1,y2,'bo-',label='NGSM')
+plt.legend(loc=0)
+plt.xlabel("Number of Users and Channels(Volunteer to user ratio = 0.1)")
+plt.ylabel("Minutes to Identify Channels")
+plt.savefig("ngsm_simulation_0point1")
+
