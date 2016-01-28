@@ -1,6 +1,139 @@
 import re
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
+import time as ti
+
+def parse2(files):
+	count = 0
+	#channels[key] = [[time,value],[time,value]]
+	channels = {}
+	for f in files:
+		for line in open(f,'r'):
+			if "MeasurementReport" in line:
+				count = count+1
+				temp = line.split("MeasurementReport: ")[1]
+				time = temp.split(" {")[0]
+				#print time
+
+				#COPY paste from below, need to change this. 
+				answer = re.findall('{[0-9]*:.*[0-9]',line)
+				# print answer[0]
+				ans = answer[0][1:]
+				ans = ans.split(', ')
+				# print ans
+				for item in ans:
+					broken = item.split(': ')
+					key = broken[0]
+					value = broken[1]
+					#print "%s,%s" %(key,value)
+					if key not in channels:
+						channels[key] = [];
+					channels[key].append([time,value])
+
+
+	print "*************"
+	count_possitive = 0
+	count_negative = 0
+	last_count = 0;
+	last_time = '';
+	last = ''
+	#channels_smaller = [time,value,number of times]
+	channels_smaller = {}
+	for channel in sorted(map(int,channels.keys())):
+		for arraymember in channels[str(channel)]:
+			#print arraymember
+			if arraymember[1] != "-0.001":   #this is just counting the possitive 
+				#print "%s,%s" %(channel,arraymember[0])
+				count_possitive=count_possitive+1
+			else:  #this is just counting the negative 
+				count_negative = count_negative+1
+
+			#this part makes the channels_smaller dictionary	channels_smaller = [start_time,value,number of times]
+			if last == '':  #this handles the first ever arraymameber in the channels array
+				last_time = arraymember[0]
+				last = arraymember[1]
+				last_count = 1
+			elif arraymember[1] == last:  # this handles when the entry is the same as last 
+				last_count = last_count+1
+			elif arraymember[1] != last:   # this parts handles the changes in the channel
+				if channel not in channels_smaller:
+					channels_smaller[channel] = []
+				channels_smaller[channel].append([last_time,last,last_count])
+				last = arraymember[1]
+				last_count = 1
+				last_time = arraymember[0]
+		if channel not in channels_smaller:
+			channels_smaller[channel] = []
+		channels_smaller[channel].append([last_time,last,last_count]) #This handles the last few in the loop when there is no change
+		last_count = 0;
+		last_time = '';
+		last = ''
+
+		#print "%s,%d,%d,%d" %(channel,count_possitive,count_negative, len(channels_smaller[channel]))
+		count_possitive=0
+		count_negative=0
+
+	
+	for channel in sorted(map(int,channels.keys())):
+		if channel in [1,16,22,45,48,52,59,89,95]:
+			yaxis2 = []
+			xaxis2 = []
+			current_second = 0
+			time_based_array = {} #time based array for each channel to complement the aa graphs
+			for arraymember in channels[str(channel)]:
+				tm = ti.strptime(arraymember[0].split('.')[0],"%Y-%m-%d %H:%M:%S")
+				time_in_seconds = (tm[1]*30*24*3600)+(tm[2]*24*3600)+(tm[3]*3600)+(tm[4]*60)+tm[5]
+				#print seconds
+				if current_second == 0:
+					current_second = time_in_seconds;
+				if time_in_seconds != current_second:
+					current_second = time_in_seconds
+				if current_second not in time_based_array:
+					time_based_array[current_second] = 0		
+				time_based_array[current_second] = time_based_array[current_second]+1
+
+			current_second = 0
+
+
+			for key in sorted(time_based_array.keys()):
+				xaxis2.append(key-min(time_based_array.keys()))
+				yaxis2.append(time_based_array[key])
+
+			plt.figure()
+			plt.plot(xaxis2,yaxis2,'b--',label="Number of measurement reports")
+			plt.xlabel("Time in seconds")
+			plt.ylabel("Number of measurement reports")
+			plt.legend();
+			plt.savefig("ab"+str(channel))
+
+
+	for channel in channels_smaller:
+		if len(channels_smaller[channel]) > 1:
+			plt.figure()
+			value_yaxis = []
+			value_xaxis = []
+			count = 0
+			print "********"
+			for arraymember in channels_smaller[channel]:
+				#print arraymember
+				for i in range(0,arraymember[2]):
+					if arraymember[1] < 0:
+						arraymember[1] = 0
+						print arraymember[1]
+					value_yaxis.append(float(arraymember[1]))
+					#print arraymember
+					value_xaxis.append(count)
+					count = count+1
+
+			
+
+
+			plt.plot(value_xaxis,value_yaxis,'b.', label="RSSI values reported")#,legand="Values Reported in Measurement Report")
+			plt.ylabel("RSSI value")
+			plt.xlabel("Cronologically arraged Measurement Reports")
+			plt.legend()
+			plt.savefig("aa"+str(channel))
+
 
 
 def parse(f, readings):
@@ -23,13 +156,15 @@ def parse(f, readings):
 				readings[key].append(value)
 	return readings;
 
-def makefigure(files, savename)
+def makefigure(files, savename):
 	readings = {}
-	for file in files:
-		readings = parse("/home/alfred/24-09-15/pico_cell/New_Whitespace/report1.log", readings);
-	readings = parse("/home/alfred/24-09-15/pico_cell/New_Whitespace/report2.log", readings);
+	for f in files:
+		readings = parse(f, readings);
+	# readings = parse("/home/alfred/24-09-15/pico_cell/New_Whitespace/report2.log", readings);
 	# readings = parse("/media/UUI/whitespace_third/measurement_report_final_set", readings);
-	#print result
+	# print result
+
+
 	print "***************"
 
 	channel_energy_dict = {}
@@ -51,7 +186,7 @@ def makefigure(files, savename)
 	print len(channel_energy_dict)
 	channels = []
 	#frequency = [0.2] * 118
-	frequency = [0.2]*106
+	frequency = [0.2]*len(channel_energy_dict)
 	colors = []
 	labels = []
 	width = 1.0
@@ -84,7 +219,14 @@ def makefigure(files, savename)
 	plt.title('Whitespaces Measurement')
 
 	plt.legend((red_patch, green_patch), ('Used Channels', 'Unused Channels'))
-	plt.savefig("whitespaces_image")
+	plt.savefig(savename)
 
 files_2nd_week = ["/home/alfred/24-09-15/pico_cell/New_Whitespace/report1.log","/home/alfred/24-09-15/pico_cell/New_Whitespace/report2.log"]
 makefigure(files_2nd_week, 'Whitespaces_2nd_week')
+
+files_1st_week = ["/home/alfred/WHITESPACES/measurement_report_first_set","/home/alfred/WHITESPACES/measurement_report_second_set","/home/alfred/WHITESPACES/measurement_report_final_set"]
+makefigure(files_1st_week, 'Whitespaces_1st_week')
+
+#parse2(["/home/alfred/24-09-15/pico_cell/New_Whitespace/report1.log","/home/alfred/24-09-15/pico_cell/New_Whitespace/report2.log"])
+#parse2(["/home/talal/Dropbox/primitives/New Whitespaces/report1.log","/home/talal/Dropbox/primitives/New Whitespaces/report2.log"])
+parse2(files_1st_week)
