@@ -118,6 +118,8 @@ def parse2(files):
 				xaxis3.append(current_minute*5)
 				yaxis3.append(agg)
 
+			
+			print "channel = %d, reports per minute = %f " %(channel,float(sum(yaxis3))/float(sum(xaxis3)))
 
 
 			plt.figure()
