@@ -78,6 +78,8 @@ def parse2(files):
 		if channel in [1,16,22,45,48,52,59,89,95]:
 			yaxis2 = []
 			xaxis2 = []
+			yaxis3 = []
+			xaxis3 = []
 			current_second = 0
 			time_based_array = {} #time based array for each channel to complement the aa graphs
 			for arraymember in channels[str(channel)]:
@@ -94,19 +96,41 @@ def parse2(files):
 
 			current_second = 0
 
-
+			current_minute = 0
 			for key in sorted(time_based_array.keys()):
+				if len(xaxis2) > 0 and xaxis2[-1]+1 != key-min(time_based_array.keys()):
+					for i in range(xaxis2[-1]+1,key-min(time_based_array.keys())):
+						xaxis3.append(i)
+						yaxis3.append(0)
+
 				xaxis2.append(key-min(time_based_array.keys()))
 				yaxis2.append(time_based_array[key])
 
+			yaxis3 = []
+			xaxis3 = []
+			for current_minute in range(0,1000):
+				agg = 0
+				if (current_minute*300)+min(time_based_array.keys()) > max(time_based_array.keys()):
+					break;
+				for i in range(current_minute*300,(current_minute+1)*300):
+					if i+min(time_based_array.keys()) in time_based_array:
+						agg = time_based_array[i+min(time_based_array.keys())]+agg
+				xaxis3.append(current_minute*5)
+				yaxis3.append(agg)
+
+
+
 			plt.figure()
-			plt.plot(xaxis2,yaxis2,'b--',label="Number of measurement reports")
-			plt.xlabel("Time in seconds")
+			#plt.plot(xaxis2,yaxis2,'b.',label="Measurement Report Count")
+			plt.plot(xaxis3,yaxis3,'b-',label="Measurement Report Count Every 5 Minutes")
+			plt.xlabel("Time in minutes")
 			plt.ylabel("Number of measurement reports")
-			plt.legend();
+			plt.legend(loc=0);
 			plt.savefig("ab"+str(channel))
 
-
+	number_bw_detection = []
+	last = ''
+	last_number = 0
 	for channel in channels_smaller:
 		if len(channels_smaller[channel]) > 1:
 			plt.figure()
@@ -125,15 +149,28 @@ def parse2(files):
 					value_xaxis.append(count)
 					count = count+1
 
-			
-
+				#channels_smaller = {[start_time,value,number of times]}
+			for arraymember in channels_smaller[channel]:
+				if last == '':
+					last = arraymember[1]
+					last_number = arraymember[2]
+				if arraymember[1] != last and (last < 0 or last[0]=='-'):
+					number_bw_detection.append(last_number)
+				last = arraymember[1]
+				last_number = arraymember[2]
+			print "channel = %d and number_bw_detection length = %d"  %(channel,len(number_bw_detection))
+			if len(number_bw_detection) > 0:
+				print "min = %d and max = %d and avg = %f" %(min(number_bw_detection),max(number_bw_detection),sum(number_bw_detection)/len(number_bw_detection)) 
+			number_bw_detection = []
+			last = ''
+			last_number = 0
 
 			plt.plot(value_xaxis,value_yaxis,'b.', label="RSSI values reported")#,legand="Values Reported in Measurement Report")
 			plt.ylabel("RSSI value")
 			plt.xlabel("Cronologically arraged Measurement Reports")
-			plt.legend()
+			plt.legend(loc=0)
 			plt.savefig("aa"+str(channel))
-
+	print channels_smaller[48]
 
 
 def parse(f, readings):
